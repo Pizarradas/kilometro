@@ -12,7 +12,7 @@ css = re.sub(r'\n\s*\n', '\n', css)
 app = (R/'src/km.css').read_text()
 html = (R/'src/index.html').read_text()
 html = html.replace('{{CSS}}', css + '\n' + app)
-for s in ['km-mapa', 'km-estacion', 'km-destino']:
+for s in ['km-mapa', 'km-mapa-m', 'km-estacion', 'km-destino']:
     html = html.replace('{{SVG:%s}}' % s, (R/'iso'/(s+'.svg')).read_text().strip())
 html = html.replace('{{JS}}', (R/'src/km.js').read_text())
 out = R/'dist'; out.mkdir(exist_ok=True)

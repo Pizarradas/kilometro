@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Kilómetro 36,6</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Valdemoro → Julián Camarillo: cómo ir y volver cada día al trabajo, contado como un día entero y siempre en el peor escenario.">
@@ -12,8 +13,8 @@
     <p class="km-clock"><span class="km-clock__time">06:30</span> Lunes · Valdemoro, Av. Mar Mediterráneo</p>
     <h1 class="km-hero__title">36,6&nbsp;km hasta la oficina. <em>Cada día, ida y vuelta.</em></h1>
     <div class="km-grid" style="row-gap: var(--km-gutter)">
-      <p class="km-lede km-col-half">Entre la mejor y la peor forma de ir a Julián Camarillo hay <strong>dos horas al día</strong>. Casi todo depende de una pregunta: si tienes plaza para el coche al llegar.</p>
-      <div class="km-col-half" style="display:grid; align-content:end">
+      <p class="km-lede km-hero__half">Entre la mejor y la peor forma de ir a Julián Camarillo hay <strong>dos horas al día</strong>. Casi todo depende de una pregunta: si tienes plaza para el coche al llegar.</p>
+      <div class="km-hero__half" style="display:grid; align-content:end">
         <div class="km-sign" role="img" aria-label="Cartel de autovía: A-4, Madrid, Julián Camarillo, 36,6 kilómetros">
           <span class="km-sign__road" aria-hidden="true">A-4</span>
           <span class="km-sign__to" aria-hidden="true"><span class="km-sign__place">Julián Camarillo</span><span class="km-sign__via">Madrid · Simancas · San Blas-Canillejas</span></span>
@@ -22,7 +23,8 @@
       </div>
     </div>
     <figure class="km-figure">
-      {{SVG:km-mapa}}
+      <div class="km-only-s">{{SVG:km-mapa-m}}</div>
+      <div class="km-only-l">{{SVG:km-mapa}}</div>
       <figcaption>Valdemoro a la izquierda, Simancas a la derecha. En medio, la A-4 y la vía de la C3: los dos caminos de esta historia.</figcaption>
     </figure>
     <ul class="km-facts" aria-label="El trayecto en cuatro cifras, peor escenario">
@@ -31,19 +33,23 @@
       <li class="km-fact"><span class="km-fact__num">~350 h</span><span class="km-fact__label"><span class="km-fact__dot km-dot km-swatch-rail" aria-hidden="true"></span>Al año, lo que separa el coche con plaza del bus + C3 + L5</span></li>
       <li class="km-fact"><span class="km-fact__num">16.500 km</span><span class="km-fact__label"><span class="km-fact__dot km-dot km-swatch-ink" aria-hidden="true"></span>Al año en coche, solo para ir a trabajar</span></li>
     </ul>
-    <nav aria-label="Capítulos del día">
-      <ol class="km-toc">
-        <li><a href="#pregunta"><b>06:30</b> La pregunta</a></li>
-        <li><a href="#ida"><b>07:00</b> La ida en coche</a></li>
-        <li><a href="#tren"><b>08:01</b> El tren</a></li>
-        <li><a href="#aparcar"><b>09:05</b> Aparcar</a></li>
-        <li><a href="#vuelta"><b>15:00</b> La vuelta</a></li>
-        <li><a href="#cuenta"><b>19:00</b> La cuenta</a></li>
-        <li><a href="#veredicto"><b>21:00</b> El veredicto</a></li>
-        <li><a href="#manana"><b>Mañana</b> Qué hacer</a></li>
-      </ol>
-    </nav>
   </header>
+
+</div>
+<nav class="km-daybar" aria-label="Capítulos del día">
+  <ol class="km-daybar__list">
+    <li><a class="km-daybar__link" href="#pregunta"><b>06:30</b> La pregunta</a></li>
+    <li><a class="km-daybar__link" href="#ida"><b>07:00</b> La ida</a></li>
+    <li><a class="km-daybar__link" href="#tren"><b>08:01</b> El tren</a></li>
+    <li><a class="km-daybar__link" href="#aparcar"><b>09:05</b> Aparcar</a></li>
+    <li><a class="km-daybar__link" href="#vuelta"><b>15:00</b> La vuelta</a></li>
+    <li><a class="km-daybar__link" href="#cuenta"><b>19:00</b> La cuenta</a></li>
+    <li><a class="km-daybar__link" href="#veredicto"><b>21:00</b> El veredicto</a></li>
+    <li><a class="km-daybar__link" href="#manana"><b>Mañana</b> Qué hacer</a></li>
+  </ol>
+</nav>
+
+<div class="km-wrap">
 
   <!-- ============ 06:30 LA PREGUNTA ============ -->
   <section class="km-chapter km-grid" id="pregunta" aria-labelledby="t-pregunta">
@@ -107,11 +113,11 @@
           <h3 class="km-chart__title">Ida según la hora de salida</h3>
           <p class="km-chart__note">Minutos, máximo del rango de Google Maps · lunes</p>
         </div>
-        <fieldset class="km-seg">
+        <fieldset class="km-seg km-seg--fill">
           <legend class="syx-sr-only">Ruta</legend>
-          <label><input type="radio" name="ruta-ida" id="ruta-a4" value="a4" checked><span>A-4 directa · 36,6 km</span></label>
-          <label><input type="radio" name="ruta-ida" id="ruta-m40" value="m40"><span>A-4 + M-40 · 37,5 km</span></label>
-          <label><input type="radio" name="ruta-ida" id="ruta-r4" value="r4"><span>R-4 peaje · 43,6 km</span></label>
+          <label><input type="radio" name="ruta-ida" id="ruta-a4" value="a4" checked><span>A-4 directa<small>36,6 km</small></span></label>
+          <label><input type="radio" name="ruta-ida" id="ruta-m40" value="m40"><span>A-4 + M-40<small>37,5 km</small></span></label>
+          <label><input type="radio" name="ruta-ida" id="ruta-r4" value="r4"><span>R-4 peaje<small>43,6 km</small></span></label>
         </fieldset>
       </div>
       <ul class="km-bars" id="bars-ida" style="--km-max-v: 80; --km-ticks: 4"></ul>
@@ -166,21 +172,89 @@
       <figcaption>El parking de abono con sitio, la calle con doble fila y, al fondo, la explanada gratuita: probablemente llena a las 8:30.</figcaption>
     </figure>
     <div>
-      <div class="atom-table__container atom-table--resp" role="region" aria-label="Aparcamientos cerca de Julián Camarillo, ordenados por recomendación" tabindex="0">
-        <table class="atom-table">
-          <thead><tr><th class="atom-table__th" scope="col">Parking</th><th class="atom-table__th" scope="col">Dirección</th><th class="atom-table__th" scope="col">Horario</th><th class="atom-table__th" scope="col">A pie*</th><th class="atom-table__th" scope="col">Nota</th><th class="atom-table__th" scope="col">Veredicto</th></tr></thead>
-          <tbody>
-            <tr><td class="atom-table__td"><strong>Parking 24h Miguel Yuste Metropolitano</strong></td><td class="atom-table__td">Miguel Yuste, 64</td><td class="atom-table__td">24 h</td><td class="atom-table__td">5–8 min</td><td class="atom-table__td">3,8</td><td class="atom-table__td"><span class="atom-pill atom-pill--success">El mejor para abono</span></td></tr>
-            <tr><td class="atom-table__td"><strong>Indigo Madrid Avalon</strong></td><td class="atom-table__td">Santa Leonor, 65</td><td class="atom-table__td">24 h</td><td class="atom-table__td">~12 min</td><td class="atom-table__td">3,9</td><td class="atom-table__td"><span class="atom-pill atom-pill--success">Alternativa · reserva online</span></td></tr>
-            <tr><td class="atom-table__td"><strong>Homely Julián Camarillo II</strong></td><td class="atom-table__td">Julián Camarillo, 17</td><td class="atom-table__td">L-V 7:00–22:00</td><td class="atom-table__td">&lt; 2 min</td><td class="atom-table__td">4,3</td><td class="atom-table__td"><span class="atom-pill atom-pill--warning">Pequeño y con mucha demanda</span></td></tr>
-            <tr><td class="atom-table__td">Onepark Albasanz</td><td class="atom-table__td">Albasanz, 63</td><td class="atom-table__td">24 h</td><td class="atom-table__td">~8 min</td><td class="atom-table__td">3,0</td><td class="atom-table__td"><span class="atom-pill atom-pill--warning">Reserva online</span></td></tr>
-            <tr><td class="atom-table__td">Onepark Valentín Beato</td><td class="atom-table__td">Valentín Beato, 20</td><td class="atom-table__td">24 h</td><td class="atom-table__td">~10 min</td><td class="atom-table__td">2,0</td><td class="atom-table__td"><span class="atom-pill atom-pill--warning">Exterior</span></td></tr>
-            <tr><td class="atom-table__td">Garaje García Noblejas 43</td><td class="atom-table__td">Hnos. García Noblejas, 43</td><td class="atom-table__td">Hasta 23:00</td><td class="atom-table__td">~12 min</td><td class="atom-table__td">3,5</td><td class="atom-table__td"><span class="atom-pill atom-pill--warning">Barato, fácil acceso</span></td></tr>
-            <tr><td class="atom-table__td">Garaje San Blas</td><td class="atom-table__td">Emilio Muñoz, 13</td><td class="atom-table__td">Hasta 21:00</td><td class="atom-table__td">~3 min</td><td class="atom-table__td">2,9</td><td class="atom-table__td"><span class="atom-pill atom-pill--danger">Malas reseñas · cierra pronto</span></td></tr>
-            <tr><td class="atom-table__td">Explanada gratuita</td><td class="atom-table__td">~900 m al este, hacia Canillejas</td><td class="atom-table__td">24 h</td><td class="atom-table__td">12–15 min</td><td class="atom-table__td">3,3</td><td class="atom-table__td"><span class="atom-pill atom-pill--danger">Probablemente llena a las 8:30</span></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="km-parks-head" aria-hidden="true"><span>Parking</span><span>Dirección</span><span>Horario</span><span>A pie*</span><span>Nota</span><span>Veredicto</span></div>
+      <ol class="km-parks" aria-label="Aparcamientos cerca de Julián Camarillo, de más a menos recomendable">
+        <li class="km-park is-top">
+          <h3 class="km-park__name">Parking 24h Miguel Yuste Metropolitano</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--success">El mejor para abono</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>Miguel Yuste, 64</dd></div>
+            <div><dt>Horario</dt><dd>24 h</dd></div>
+            <div><dt>A pie*</dt><dd>5–8 min</dd></div>
+            <div><dt>Nota</dt><dd>3,8</dd></div>
+          </dl>
+        </li>
+        <li class="km-park is-top">
+          <h3 class="km-park__name">Indigo Madrid Avalon</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--success">Alternativa · reserva online</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>Santa Leonor, 65</dd></div>
+            <div><dt>Horario</dt><dd>24 h</dd></div>
+            <div><dt>A pie*</dt><dd>~12 min</dd></div>
+            <div><dt>Nota</dt><dd>3,9</dd></div>
+          </dl>
+        </li>
+        <li class="km-park is-top">
+          <h3 class="km-park__name">Homely Julián Camarillo II</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--warning">Pequeño y con mucha demanda</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>Julián Camarillo, 17</dd></div>
+            <div><dt>Horario</dt><dd>L-V 7:00–22:00</dd></div>
+            <div><dt>A pie*</dt><dd>< 2 min</dd></div>
+            <div><dt>Nota</dt><dd>4,3</dd></div>
+          </dl>
+        </li>
+        <li class="km-park">
+          <h3 class="km-park__name">Onepark Albasanz</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--warning">Reserva online</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>Albasanz, 63</dd></div>
+            <div><dt>Horario</dt><dd>24 h</dd></div>
+            <div><dt>A pie*</dt><dd>~8 min</dd></div>
+            <div><dt>Nota</dt><dd>3,0</dd></div>
+          </dl>
+        </li>
+        <li class="km-park">
+          <h3 class="km-park__name">Onepark Valentín Beato</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--warning">Exterior</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>Valentín Beato, 20</dd></div>
+            <div><dt>Horario</dt><dd>24 h</dd></div>
+            <div><dt>A pie*</dt><dd>~10 min</dd></div>
+            <div><dt>Nota</dt><dd>2,0</dd></div>
+          </dl>
+        </li>
+        <li class="km-park">
+          <h3 class="km-park__name">Garaje García Noblejas 43</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--warning">Barato, fácil acceso</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>Hnos. García Noblejas, 43</dd></div>
+            <div><dt>Horario</dt><dd>Hasta 23:00</dd></div>
+            <div><dt>A pie*</dt><dd>~12 min</dd></div>
+            <div><dt>Nota</dt><dd>3,5</dd></div>
+          </dl>
+        </li>
+        <li class="km-park">
+          <h3 class="km-park__name">Garaje San Blas</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--danger">Malas reseñas · cierra pronto</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>Emilio Muñoz, 13</dd></div>
+            <div><dt>Horario</dt><dd>Hasta 21:00</dd></div>
+            <div><dt>A pie*</dt><dd>~3 min</dd></div>
+            <div><dt>Nota</dt><dd>2,9</dd></div>
+          </dl>
+        </li>
+        <li class="km-park">
+          <h3 class="km-park__name">Explanada gratuita</h3>
+          <span class="km-park__verdict"><span class="atom-pill atom-pill--danger">Probablemente llena a las 8:30</span></span>
+          <dl class="km-park__facts">
+            <div><dt>Dirección</dt><dd>~900 m al este, hacia Canillejas</dd></div>
+            <div><dt>Horario</dt><dd>24 h</dd></div>
+            <div><dt>A pie*</dt><dd>12–15 min</dd></div>
+            <div><dt>Nota</dt><dd>3,3</dd></div>
+          </dl>
+        </li>
+      </ol>
       <p class="km-meta">* Distancias aproximadas, a confirmar. El parking de Mercadona (Julián Camarillo, 15) es solo para clientes. Hay plazas para motos en Julián Camarillo, 8 y en Santa Leonor, 65.</p>
     </div>
   </section>
@@ -271,8 +345,9 @@
           <div class="km-seg"><label><input type="radio" name="q3" id="q3-si" value="si"><span>Sí</span></label><label><input type="radio" name="q3" id="q3-no" value="no" checked><span>No</span></label></div></fieldset>
         <fieldset class="km-q" id="q4" style="border:0; padding:0; margin:0"><legend class="km-q__text"><span class="km-q__step">3 · </span>¿Prefieres tiempo útil y predecible?</legend>
           <div class="km-seg"><label><input type="radio" name="q4" id="q4-si" value="si" checked><span>Sí</span></label><label><input type="radio" name="q4" id="q4-no" value="no"><span>No, quiero ir en coche igualmente</span></label></div></fieldset>
+        <p class="km-answer" id="km-answer" aria-live="polite"><span class="km-answer__k">Tu opción</span> <span id="km-answer-text">Coche hasta la estación + C3 + L5 · ~1 h 35</span></p>
       </div>
-      <ol class="km-outcomes" aria-live="polite">
+      <ol class="km-outcomes" aria-label="Las cinco salidas del árbol de decisión">
         <li class="km-outcome" data-r="r1"><span class="km-outcome__rank">1</span><span class="km-outcome__name">Coche, saliendo a partir de las 9:30</span><span class="km-outcome__time">~50 min</span></li>
         <li class="km-outcome" data-r="r2"><span class="km-outcome__rank">2</span><span class="km-outcome__name">Coche por la A-4 directa, saliendo a las 7:45</span><span class="km-outcome__time">~1 h 10</span></li>
         <li class="km-outcome" data-r="r3"><span class="km-outcome__rank">3</span><span class="km-outcome__name">Coche + abono en Miguel Yuste o Indigo</span><span class="km-outcome__time">~1 h 20</span></li>
@@ -283,21 +358,28 @@
 
     <div class="km-col-wide" style="display:grid; gap: var(--km-inner)">
       <h3 class="km-chart__title">Si todo pesa lo mismo</h3>
-      <div class="atom-table__container atom-table--resp" role="region" aria-label="Comparativa por criterios, de 1 a 5" tabindex="0">
-        <table class="atom-table">
-          <thead><tr><th class="atom-table__th" scope="col">Criterio</th><th class="atom-table__th" scope="col">Coche + plaza</th><th class="atom-table__th" scope="col">Coche sin plaza</th><th class="atom-table__th" scope="col">Coche a estación + C3</th><th class="atom-table__th" scope="col">Bus + C3 + L5</th><th class="atom-table__th" scope="col">Interurbano</th></tr></thead>
-          <tbody>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead">Rapidez</span></th><td class="atom-table__td"><span class="km-score" data-s="5">5</span></td><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td><td class="atom-table__td"><span class="km-score" data-s="1">1</span></td></tr>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead">Previsibilidad</span></th><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="1">1</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td></tr>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead">Tiempo aprovechable</span></th><td class="atom-table__td"><span class="km-score" data-s="1">1</span></td><td class="atom-table__td"><span class="km-score" data-s="1">1</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td></tr>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead">Coste</span></th><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="5">5</span></td><td class="atom-table__td"><span class="km-score" data-s="5">5</span></td></tr>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead">Estrés</span></th><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="1">1</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td></tr>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead">Flexibilidad horaria</span></th><td class="atom-table__td"><span class="km-score" data-s="5">5</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td></tr>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead">Con lluvia o mal tiempo</span></th><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td><td class="atom-table__td"><span class="km-score" data-s="4">4</span></td><td class="atom-table__td"><span class="km-score" data-s="3">3</span></td><td class="atom-table__td"><span class="km-score" data-s="2">2</span></td></tr>
-            <tr><th class="atom-table__td" scope="row"><span class="km-rowhead"><strong>Total</strong></span></th><td class="atom-table__td"><span class="km-score-total">22</span></td><td class="atom-table__td"><span class="km-score-total">15</span></td><td class="atom-table__td"><span class="km-score-total is-best">26</span></td><td class="atom-table__td"><span class="km-score-total">24</span></td><td class="atom-table__td"><span class="km-score-total">17</span></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <ol class="km-crits" aria-label="Comparativa por criterios, de 1 a 5">
+        <li class="km-crit km-swatch-car">
+          <div class="km-crit__head"><h4 class="km-crit__title">Coche + plaza</h4><span class="km-crit__total"><span class="syx-sr-only">Total </span>22<small>/35</small></span></div>
+          <ul class="km-crit__list"><li class="km-crit__row"><span class="km-crit__name">Rapidez</span><span class="km-meter" role="img" aria-label="5 de 5" style="--km-v: 5"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">5</span></li><li class="km-crit__row"><span class="km-crit__name">Previsibilidad</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li><li class="km-crit__row"><span class="km-crit__name">Tiempo aprovechable</span><span class="km-meter" role="img" aria-label="1 de 5" style="--km-v: 1"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">1</span></li><li class="km-crit__row"><span class="km-crit__name">Coste</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li><li class="km-crit__row"><span class="km-crit__name">Estrés</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li><li class="km-crit__row"><span class="km-crit__name">Flexibilidad horaria</span><span class="km-meter" role="img" aria-label="5 de 5" style="--km-v: 5"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">5</span></li><li class="km-crit__row"><span class="km-crit__name">Con lluvia o mal tiempo</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li></ul>
+        </li>
+        <li class="km-crit km-swatch-alert">
+          <div class="km-crit__head"><h4 class="km-crit__title">Coche sin plaza</h4><span class="km-crit__total"><span class="syx-sr-only">Total </span>15<small>/35</small></span></div>
+          <ul class="km-crit__list"><li class="km-crit__row"><span class="km-crit__name">Rapidez</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li><li class="km-crit__row"><span class="km-crit__name">Previsibilidad</span><span class="km-meter" role="img" aria-label="1 de 5" style="--km-v: 1"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">1</span></li><li class="km-crit__row"><span class="km-crit__name">Tiempo aprovechable</span><span class="km-meter" role="img" aria-label="1 de 5" style="--km-v: 1"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">1</span></li><li class="km-crit__row"><span class="km-crit__name">Coste</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li><li class="km-crit__row"><span class="km-crit__name">Estrés</span><span class="km-meter" role="img" aria-label="1 de 5" style="--km-v: 1"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">1</span></li><li class="km-crit__row"><span class="km-crit__name">Flexibilidad horaria</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Con lluvia o mal tiempo</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li></ul>
+        </li>
+        <li class="km-crit km-swatch-rail is-best">
+          <div class="km-crit__head"><h4 class="km-crit__title">Coche a estación + C3</h4><span class="km-crit__total"><span class="syx-sr-only">Total </span>26<small>/35</small></span></div>
+          <ul class="km-crit__list"><li class="km-crit__row"><span class="km-crit__name">Rapidez</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li><li class="km-crit__row"><span class="km-crit__name">Previsibilidad</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Tiempo aprovechable</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Coste</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Estrés</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Flexibilidad horaria</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li><li class="km-crit__row"><span class="km-crit__name">Con lluvia o mal tiempo</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li></ul>
+        </li>
+        <li class="km-crit km-swatch-rail">
+          <div class="km-crit__head"><h4 class="km-crit__title">Bus + C3 + L5</h4><span class="km-crit__total"><span class="syx-sr-only">Total </span>24<small>/35</small></span></div>
+          <ul class="km-crit__list"><li class="km-crit__row"><span class="km-crit__name">Rapidez</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li><li class="km-crit__row"><span class="km-crit__name">Previsibilidad</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Tiempo aprovechable</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Coste</span><span class="km-meter" role="img" aria-label="5 de 5" style="--km-v: 5"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">5</span></li><li class="km-crit__row"><span class="km-crit__name">Estrés</span><span class="km-meter" role="img" aria-label="4 de 5" style="--km-v: 4"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">4</span></li><li class="km-crit__row"><span class="km-crit__name">Flexibilidad horaria</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li><li class="km-crit__row"><span class="km-crit__name">Con lluvia o mal tiempo</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li></ul>
+        </li>
+        <li class="km-crit km-swatch-ink">
+          <div class="km-crit__head"><h4 class="km-crit__title">Interurbano</h4><span class="km-crit__total"><span class="syx-sr-only">Total </span>17<small>/35</small></span></div>
+          <ul class="km-crit__list"><li class="km-crit__row"><span class="km-crit__name">Rapidez</span><span class="km-meter" role="img" aria-label="1 de 5" style="--km-v: 1"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">1</span></li><li class="km-crit__row"><span class="km-crit__name">Previsibilidad</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li><li class="km-crit__row"><span class="km-crit__name">Tiempo aprovechable</span><span class="km-meter" role="img" aria-label="3 de 5" style="--km-v: 3"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">3</span></li><li class="km-crit__row"><span class="km-crit__name">Coste</span><span class="km-meter" role="img" aria-label="5 de 5" style="--km-v: 5"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">5</span></li><li class="km-crit__row"><span class="km-crit__name">Estrés</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li><li class="km-crit__row"><span class="km-crit__name">Flexibilidad horaria</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li><li class="km-crit__row"><span class="km-crit__name">Con lluvia o mal tiempo</span><span class="km-meter" role="img" aria-label="2 de 5" style="--km-v: 2"><span class="km-meter__fill"></span></span><span class="km-crit__v" aria-hidden="true">2</span></li></ul>
+        </li>
+      </ol>
       <p class="km-meta">Puntuación de 1 a 5, orientativa. Si das el mismo peso a todo, gana el coche hasta la estación + C3. Si lo que más pesa es el tiempo, gana el coche con plaza.</p>
     </div>
 

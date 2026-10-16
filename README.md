@@ -37,6 +37,18 @@ Landing narrativa del trayecto Valdemoro → Julián Camarillo, contada como un 
 - 6 → 12 columnas a 48em; gutter `clamp(1rem, .75rem + 1.111vw, 1.75rem)`; margen 16 → 120 px; máx. 1200 px.
 - Operadores: O3 (la prosa arranca en la línea 3), O8 (maquetas isométricas a 30°), ruptura del mapa y el ranking a ancho completo.
 
+## Mobile first
+
+Se diseña a 360px y cada rango añade estructura, nunca la quita:
+
+| Rango | Columnas | Cambio |
+|---|---|---|
+| < 48em | 6 | Una columna; maqueta compacta del trayecto (10 × 5,2 u, el coche mide ~30px); cifras 2×2; parkings y criterios como tarjetas; barras con la etiqueta encima; selector de ruta a ancho completo |
+| 48–64em | 12 | Desplazamiento O3 de la prosa; maqueta completa (20 × 7,2 u); itinerario y estación en dos columnas |
+| ≥ 64em | 12 | Parkings como filas alineadas; decisión en dos columnas; cifras ×4 |
+
+En todos los anchos: barra del día fija arriba (la hora y el capítulo que estás leyendo), objetivos táctiles de 44px y viewBox de las maquetas ajustado a la tinta.
+
 ## Pendiente
 
 - Bebas Neue: fijar su line box con `ascent-override: 90%; descent-override: 30%; line-gap-override: 0%` (en Windows los titulares bajan 0,05em).

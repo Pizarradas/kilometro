@@ -18,7 +18,7 @@ const pts = (l) => l.map((v) => project(v, MODE, UNIT).map(r2).join(',')).join('
 function draw(i) { return i.kind === 'cylinder' ? cylinder({ ...o, ...i }) : prism({ ...o, ...i }); }
 
 // Escena: losa → marcas planas en el suelo → sombras (recortadas a la losa) → objetos por profundidad.
-function build({ key, title, desc, base, ground = [], objects, width, height, oy = 0.62 }) {
+function build({ key, title, desc, base, ground = [], objects, extraX = 0, cls = '' }) {
   const sz = base.z + base.h;
   const dir = shadowDir('left');
   const sh = objects.filter((i) => !i.noShadow).map((i) => {
@@ -33,8 +33,16 @@ function build({ key, title, desc, base, ground = [], objects, width, height, oy
     `<g class="iso-sombras" clip-path="url(#${key}-clip)">${sh}</g>`,
     ...depthSort(objects).map(draw),
   ].join('');
-  const vb = `${-width / 2} ${-height * oy} ${width} ${height}`;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-labelledby="${key}-title ${key}-desc" class="km-iso">` +
+  // viewBox ajustado a la tinta (8px de aire): en móvil cada píxel de margen cuesta escala.
+  const corners = [base, ...ground, ...objects].flatMap((i) => i.kind === 'cylinder'
+    ? [[i.cx - i.r, i.cy - i.r, i.z], [i.cx + i.r, i.cy + i.r, i.z], [i.cx + i.r, i.cy - i.r, i.z + i.h], [i.cx - i.r, i.cy + i.r, i.z + i.h], [i.cx - i.r, i.cy - i.r, i.z + i.h]]
+    : [0, 1].flatMap((a) => [0, 1].flatMap((b) => [0, 1].map((c) => [i.x + a * i.w, i.y + b * i.d, i.z + c * i.h]))));
+  const P = corners.map((v) => project(v, MODE, UNIT));
+  const pad = 8 + (extraX || 0);
+  const minX = Math.min(...P.map((q) => q[0])) - pad, maxX = Math.max(...P.map((q) => q[0])) + pad;
+  const minY = Math.min(...P.map((q) => q[1])) - 8, maxY = Math.max(...P.map((q) => q[1])) + 8;
+  const vb = [minX, minY, maxX - minX, maxY - minY].map(r2).join(' ');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-labelledby="${key}-title ${key}-desc" class="km-iso${cls ? ' ' + cls : ''}">` +
     `<title id="${key}-title">${title}</title><desc id="${key}-desc">${desc}</desc>${body}</svg>`;
   writeFileSync(`${OUT}/${key}.svg`, svg + '\n');
 }
@@ -151,4 +159,34 @@ const wagon = (id, x, y, z, len = 2.2, token = 'tren') => box(id, x, y, z, len, 
     tree('arbol-1', -5.3, 2.3, Z), tree('arbol-2', -4.2, 3.2, Z), tree('arbol-3', -2.9, 2.4, Z),
   ];
   build({ key: 'km-destino', title: 'Aparcar en Julián Camarillo', desc: 'Maqueta isométrica: a la izquierda un parking de varias plantas con sitio; en el centro la calle con coches en doble fila y el coche propio en ámbar buscando hueco; al fondo el edificio de destino en azul y, a la derecha, la explanada gratuita llena con un cartel rojo.', base, ground, objects, width: 620, height: 470, oy: 0.6 });
+}
+
+// ===================================================================
+// 1m · El mapa compacto (móvil): el mismo relato en 10 × 5,2 unidades,
+// para que a 360px el coche siga midiendo ~30px y no 15.
+// ===================================================================
+{
+  const Z = 0.5;
+  const base = box('losa', -5, -2.6, 0, 10, 5.2, Z, 'losa');
+  const ground = [
+    box('a4', -5, 0.3, Z, 10, 1.3, 0.02, 'asfalto'),
+    ...Array.from({ length: 7 }, (_, i) => box(`a4-marca-${i}`, -4.7 + i * 1.45, 0.9, Z + 0.02, 0.65, 0.1, 0.005, 'marca')),
+    box('c3', -5, -1.5, Z, 10, 0.8, 0.02, 'balasto'),
+    box('c3-carril-0', -5, -1.37, Z + 0.02, 10, 0.08, 0.02, 'carril'),
+    box('c3-carril-1', -5, -0.92, Z + 0.02, 10, 0.08, 0.02, 'carril'),
+  ];
+  const objects = [
+    box('casa-1', -4.8, -2.5, Z, 0.9, 0.8, 0.8, 'casa'),
+    box('estacion', -3.6, -2.5, Z, 1.2, 0.85, 1, 'casa'),
+    box('casa-2', -4.8, 1.9, Z, 0.9, 0.6, 0.5, 'casa'),
+    tree('arbol-1', -1.8, -2.1, Z, 0.28, 0.75), tree('arbol-2', -0.6, -2.2, Z, 0.24, 0.6), tree('arbol-3', 0.6, -2.1, Z, 0.28, 0.75),
+    tree('arbol-4', -1.4, 2.2, Z, 0.22, 0.4), tree('arbol-5', 1.4, 2.2, Z, 0.22, 0.4),
+    ...car('coche', -2.2, 0.4, Z + 0.02),
+    ...car('coche-2', 1.2, 1.0, Z + 0.02, 'gris'),
+    wagon('tren-1', -0.2, -1.5, Z + 0.04, 1.8), wagon('tren-2', 1.7, -1.5, Z + 0.04, 1.8),
+    box('destino', 3.1, -2.5, Z, 1.5, 1.1, 3, 'oficina'),
+    box('oficina-1', 1.9, -2.5, Z, 1, 0.8, 1.7, 'edificio'),
+    box('oficina-2', 3.4, 1.9, Z, 1.2, 0.6, 0.8, 'edificio'),
+  ];
+  build({ key: 'km-mapa-m', cls: 'km-iso--m', title: 'El trayecto, de Valdemoro a Julián Camarillo', desc: 'Maqueta isométrica compacta: a la izquierda Valdemoro y su estación, en el centro la A-4 con un coche ámbar y la vía de la C3 con un tren violeta, a la derecha el edificio de destino en azul.', base, ground, objects });
 }

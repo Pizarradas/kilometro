@@ -12,7 +12,14 @@
   Operadores     : O3 desplazamiento (la prosa arranca en la línea 3, k = 2, siempre el mismo)
                    O8 rotación 30° (las maquetas isométricas, capa decorativa con texto alternativo)
   Ruptura        : el mapa del trayecto y el ranking ocupan del margen izquierdo al derecho (línea full)
-  Invariantes    : prosa ≤ 31.613em · orden DOM = orden de lectura · espaciado vertical en lh
+  Invariantes    : prosa ≤ 31.613em · orden DOM = orden de lectura · espaciado vertical en lh · objetivos táctiles ≥ 44px
+  Transformación (mobile first: se diseña a 360px y se añade estructura, nunca se quita):
+    rango        cols  margen    gutter  cambio estructural
+    < 48em       6     16→55px   16→21   todo a una columna; maqueta compacta (10×5,2 u); cifras 2×2;
+                                         parkings y criterios como tarjetas; barras con la etiqueta encima
+    48–64em      12    55→80px   21→23   O3 activo (prosa en la línea 3); maqueta completa (20×7,2 u);
+                                         itinerario + estación en dos columnas; barras en una fila
+    ≥ 64em       12    80→120px  23→28   parkings como filas alineadas; decisión en dos columnas; cifras ×4
 */
 
 /* ===== Paso 1 · tokens del proyecto (leen roles semánticos; longitudes literales solo aquí) ===== */
@@ -62,6 +69,7 @@
   --km-section: clamp(6rem, 5.6667rem + 1.4815vw, 7rem);
   --km-max: var(--layout-max-width);
   --km-cols: 6;
+  --km-daybar-h: calc(2.75rem + 2 * var(--km-micro) + 2 * var(--km-rule) + var(--km-pad));
   --km-radius: var(--semantic-border-radius-default);
   --km-rule: var(--semantic-border-width-default);
   --km-rule-thick: var(--semantic-border-width-thick);
@@ -116,6 +124,7 @@
   }
   .km-grid > * { grid-column: 1 / -1; min-width: 0; }
 
+  @media (min-width: 64em) { .km-hero__half { grid-column: span 6; } }
   @media (min-width: 48em) {
     .km-col-prose { grid-column: 3 / span 8; }       /* O3: k = 2 */
     .km-col-aside { grid-column: 1 / span 2; }
@@ -133,10 +142,10 @@
 
   /* ---------- Capítulos ---------- */
   .km-chapter {
-    padding-block: var(--km-section) 0;
-    scroll-margin-top: var(--km-gutter);
+    padding-block: calc(var(--km-section) * 0.5) 0;
+    scroll-margin-top: var(--km-daybar-h);
   }
-  .km-chapter + .km-chapter { border-block-start: var(--km-rule) solid var(--km-line); margin-block-start: var(--km-section); }
+  .km-chapter + .km-chapter { border-block-start: var(--km-rule) solid var(--km-line); margin-block-start: calc(var(--km-section) * 0.5); }
 
   /* syx-reuse: checked atom-label, atom-pill — la hora del capítulo es un dato del día (horario), no una etiqueta */
   .km-clock {
@@ -171,7 +180,7 @@
   .km-title--sub { font-size: var(--km-size-3); }
   .km-lede {
     margin: 0;
-    font-size: var(--km-size-1);
+    font-size: clamp(1.25rem, 1.0833rem + 0.7407vw, 1.5rem);
     line-height: 1.333;
     max-inline-size: 24em;
     text-wrap: pretty;
@@ -194,7 +203,8 @@
   /* syx-reuse: checked mol-card, atom-pill — un cartel de autovía: fondo azul, filete blanco interior, flecha */
   .km-sign {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "road to" "road km";
     align-items: center;
     gap: var(--km-pad) var(--km-gutter);
     padding: var(--km-pad) var(--km-gutter);
@@ -206,6 +216,9 @@
     max-inline-size: 34rem;
   }
   .km-sign__road {
+    grid-area: road;
+    align-self: start;
+    white-space: nowrap;
     font-family: var(--km-font-sign);
     font-size: var(--km-size-2);
     line-height: 1;
@@ -213,10 +226,14 @@
     border: var(--km-rule-thick) solid var(--km-on-sign);
     border-radius: var(--semantic-border-radius-sm);
   }
-  .km-sign__to { display: grid; line-height: 1.15; }
+  .km-sign__to { grid-area: to; display: grid; line-height: 1.15; min-width: 0; }
   .km-sign__place { font-weight: var(--semantic-font-weight-bold); font-size: var(--km-size-1); }
   .km-sign__via { font-size: var(--km-size-s1); opacity: 0.9; }
-  .km-sign__km { font-family: var(--km-font-sign); font-size: var(--km-size-3); line-height: 1; white-space: nowrap; }
+  .km-sign__km { grid-area: km; font-family: var(--km-font-sign); font-size: var(--km-size-3); line-height: 1; white-space: nowrap; }
+  @media (min-width: 30em) {
+    .km-sign { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "road to km"; }
+    .km-sign__road { align-self: center; }
+  }
 
   /* ---------- Ilustraciones isométricas ---------- */
   /* syx-reuse: checked mol-card__media (imagen recortada) — la maqueta es un SVG vivo con tokens propios */
@@ -234,16 +251,18 @@
   /* syx-reuse: checked atom-stat (número + etiqueta, sin unidad ni contexto) — cada cifra lleva su horquilla */
   .km-facts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-    gap: var(--km-gutter);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--km-gutter) var(--km-pad);
     margin: 0;
     padding: 0;
     list-style: none;
     border-block: var(--km-rule) solid var(--km-line);
     padding-block: var(--km-gutter);
   }
-  .km-fact { display: grid; gap: var(--km-micro); align-content: start; }
-  .km-fact__num { font-family: var(--km-font-sign); font-size: var(--km-size-4); line-height: 1; }
+  @media (min-width: 64em) { .km-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--km-gutter); } }
+  .km-fact { display: grid; gap: var(--km-micro); align-content: start; min-width: 0; }
+  .km-fact__num { font-family: var(--km-font-sign); font-size: var(--km-size-3); line-height: 1; }
+  @media (min-width: 48em) { .km-fact__num { font-size: var(--km-size-4); } }
   .km-fact__num--car { color: var(--km-ink); }
   .km-fact__label { font-size: var(--km-size-s1); color: var(--km-ink-soft); max-inline-size: 18em; }
   .km-fact__dot {
@@ -281,13 +300,15 @@
   /* syx-reuse: checked atom-progress (una sola barra, sin escala ni etiquetas) — gráfico con eje compartido */
   .km-chart { display: grid; gap: var(--km-inner); }
   .km-chart__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--km-pad); }
+  .km-chart__head > fieldset { flex: 1 1 100%; }
+  @media (min-width: 48em) { .km-chart__head > fieldset { flex: 0 1 auto; } }
   .km-chart__title { margin: 0; font-family: var(--km-font-body); font-weight: var(--semantic-font-weight-bold); font-size: var(--km-size-body); letter-spacing: 0; text-transform: none; }
   .km-rowhead { font-family: var(--km-font-body); font-size: var(--km-size-s1); font-weight: var(--semantic-font-weight-medium); text-transform: none; letter-spacing: 0; }
   .km-chart__note { margin: 0; font-size: var(--km-size-s1); color: var(--km-ink-soft); }
   .km-bars { display: grid; gap: var(--km-inner); margin: 0; padding: 0; list-style: none; }
   .km-bar {
     display: grid;
-    grid-template-columns: minmax(3.5rem, 5.5rem) minmax(0, 1fr) minmax(4.5rem, auto);
+    grid-template-columns: 4rem minmax(0, 1fr) 6.75rem;
     align-items: center;
     gap: var(--km-pad);
   }
@@ -335,7 +356,7 @@
   .km-bar.is-best .km-bar__label, .km-bar.is-best .km-bar__value b { color: var(--km-good); }
   .km-axis {
     display: grid;
-    grid-template-columns: minmax(3.5rem, 5.5rem) minmax(0, 1fr) minmax(4.5rem, auto);
+    grid-template-columns: 4rem minmax(0, 1fr) 6.75rem;
     gap: var(--km-pad);
     font-family: var(--km-font-clock);
     font-size: 0.75rem;
@@ -372,13 +393,18 @@
   .km-seg label {
     display: inline-flex;
     align-items: center;
-    min-block-size: 2.25rem;
+    min-block-size: 2.75rem;
     padding-inline: var(--km-pad);
     border-radius: var(--semantic-border-radius-sm);
     font-size: var(--km-size-s1);
     cursor: pointer;
   }
   .km-seg input { position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; }
+  .km-seg label { position: relative; }
+  .km-seg span small { display: block; font-family: var(--km-font-clock); font-size: 0.75rem; font-weight: var(--semantic-font-weight-regular); opacity: 0.8; }
+  .km-seg--fill { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); inline-size: 100%; }
+  .km-seg--fill label { justify-content: center; text-align: center; line-height: 1.2; padding-block: var(--km-inner); }
+  @media (min-width: 48em) { .km-seg--fill { display: inline-grid; inline-size: auto; } }
   .km-seg input:checked + span { font-weight: var(--semantic-font-weight-bold); }
   .km-seg label:has(input:checked) { background: var(--km-ink); color: var(--km-paper); }
   .km-seg label:has(input:focus-visible) { outline: var(--km-rule-thick) solid var(--semantic-color-border-focus); outline-offset: 2px; }
@@ -490,15 +516,134 @@
 
   /* ---------- Pie ---------- */
   .km-foot { padding-block: var(--km-section) calc(var(--km-section) * 0.75); }
-  .km-sources { display: grid; gap: var(--km-inner); margin: 0; padding: 0; list-style: none; font-size: var(--km-size-s1); }
+  .km-sources { display: grid; gap: var(--km-micro); margin: 0; padding: 0; list-style: none; font-size: var(--km-size-s1); }
+  .km-sources a { display: inline-block; padding-block: var(--km-inner); }
   .km-meta { font-size: var(--km-size-s1); color: var(--km-ink-soft); }
   .km-meta p { margin: 0; }
 
-  /* Índice de capítulos */
-  .km-toc { display: flex; flex-wrap: wrap; gap: var(--km-inner) var(--km-gutter); margin: 0; padding: 0; list-style: none; font-family: var(--km-font-clock); font-size: var(--km-size-s1); }
-  .km-toc a { color: var(--km-ink-soft); text-decoration-color: var(--km-line); text-underline-offset: 0.25em; }
-  .km-toc a:hover { color: var(--km-ink); }
-  .km-toc b { color: var(--km-ink); font-weight: var(--semantic-font-weight-medium); }
+  /* ---------- Barra del día: fija arriba, dice en qué hora del día estás ---------- */
+  /* syx-reuse: checked org-site-header (cabecera de sitio con menú), atom-breadcrumb — un horario deslizable con el capítulo activo */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    block-size: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--km-paper);
+  }
+  .km-daybar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+    margin-block-start: var(--km-gutter);
+    background: color-mix(in oklab, var(--km-paper) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-block: var(--km-rule) solid var(--km-line);
+  }
+  .km-daybar__list {
+    display: flex;
+    gap: var(--km-micro);
+    margin: 0 auto;
+    padding-block: var(--km-micro);
+    padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+    max-inline-size: calc(var(--km-max) + 2 * var(--km-margin-extra) + 32px);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .km-daybar__list::-webkit-scrollbar { display: none; }
+  .km-daybar__list li { flex: none; scroll-snap-align: start; }
+  .km-daybar__link {
+    display: flex;
+    align-items: center;
+    gap: var(--km-inner);
+    min-block-size: 2.75rem;
+    padding-inline: var(--km-pad);
+    border-radius: var(--semantic-border-radius-sm);
+    font-family: var(--km-font-clock);
+    font-size: var(--km-size-s1);
+    color: var(--km-ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .km-daybar__link b { color: var(--km-ink); font-weight: var(--semantic-font-weight-medium); }
+  .km-daybar__link:hover { color: var(--km-ink); }
+  .km-daybar__link:focus-visible { outline: var(--km-rule-thick) solid var(--semantic-color-border-focus); outline-offset: -2px; }
+  .km-daybar__link[aria-current="true"] { background: var(--km-ink); color: var(--km-paper); }
+  .km-daybar__link[aria-current="true"] b { color: var(--km-paper); }
+
+  /* Variantes de la maqueta del trayecto */
+  .km-only-l { display: none; }
+  @media (min-width: 48em) { .km-only-s { display: none; } .km-only-l { display: block; } }
+
+  /* ---------- Parkings: tarjeta en móvil, fila alineada desde 64em ---------- */
+  /* syx-reuse: checked atom-table (scroll lateral en móvil), mol-card — una lista que cambia de forma con el ancho */
+  .km-parks { display: grid; gap: var(--km-pad); margin: 0; padding: 0; list-style: none; }
+  .km-park {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--km-inner);
+    padding: var(--km-pad);
+    border: var(--km-rule) solid var(--km-line);
+    border-radius: var(--km-radius);
+    background: var(--km-paper);
+  }
+  .km-park.is-top { background: var(--km-paper-2); }
+  .km-park__name { margin: 0; font-family: var(--km-font-body); font-size: var(--km-size-body); font-weight: var(--semantic-font-weight-bold); text-transform: none; letter-spacing: 0; line-height: 1.3; }
+  .km-park__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--km-inner) var(--km-pad); margin: 0; font-size: var(--km-size-s1); }
+  .km-park__facts div { display: grid; min-width: 0; }
+  .km-park__facts dt { font-family: var(--km-font-clock); font-size: 0.75rem; color: var(--km-ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
+  .km-park__facts dd { margin: 0; }
+  .km-parks-head { display: none; }
+  @media (min-width: 64em) {
+    .km-parks { gap: 0; border-block-start: var(--km-rule) solid var(--km-ink-soft); }
+    .km-parks-head, .km-park { grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1.1fr) minmax(0, 0.8fr) minmax(0, 0.45fr) 20rem; column-gap: var(--km-pad); align-items: center; }
+    .km-parks-head { display: grid; padding: var(--km-inner) var(--km-pad); font-family: var(--km-font-clock); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--km-ink-soft); }
+    .km-park { border: 0; border-block-end: var(--km-rule) solid var(--km-line); border-radius: 0; padding-block: var(--km-pad); }
+    .km-park__facts { display: contents; }
+    .km-park__facts div { display: block; }
+    .km-park__facts dt { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
+    .km-park__verdict { order: 6; }
+    .km-park__name { font-size: var(--km-size-s1); }
+  }
+
+  /* ---------- Criterios: una tarjeta por opción con siete medidores ---------- */
+  /* syx-reuse: checked atom-progress (barra sin escala por pasos), atom-table — medidor de 5 pasos por criterio */
+  .km-crits { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--km-gutter); margin: 0; padding: 0; list-style: none; }
+  .km-crit { display: grid; gap: var(--km-inner); align-content: start; padding-block-start: var(--km-pad); border-block-start: var(--km-rule-thick) solid var(--km-swatch); }
+  .km-crit__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--km-pad); }
+  .km-crit__title { margin: 0; font-family: var(--km-font-body); font-size: var(--km-size-body); font-weight: var(--semantic-font-weight-bold); text-transform: none; letter-spacing: 0; }
+  .km-crit__total { font-family: var(--km-font-sign); font-size: var(--km-size-2); line-height: 1; }
+  .km-crit__total small { font-size: 0.5em; color: var(--km-ink-soft); }
+  .km-crit.is-best .km-crit__total { color: var(--km-sign-ink); }
+  .km-crit__list { display: grid; gap: var(--km-micro); margin: 0; padding: 0; list-style: none; }
+  .km-crit__row { display: grid; grid-template-columns: minmax(0, 1fr) 5rem 1rem; align-items: center; gap: var(--km-inner); font-size: var(--km-size-s1); }
+  .km-crit__v { font-family: var(--km-font-clock); text-align: end; }
+  .km-meter {
+    display: block;
+    block-size: 0.5rem;
+    background: repeating-linear-gradient(90deg, var(--km-paper-3) 0 calc(20% - 2px), transparent calc(20% - 2px) 20%);
+  }
+  .km-meter__fill {
+    display: block;
+    block-size: 100%;
+    inline-size: calc(var(--km-v) * 20%);
+    background: repeating-linear-gradient(90deg, var(--km-swatch) 0 calc(100% / var(--km-v) - 2px), transparent calc(100% / var(--km-v) - 2px) calc(100% / var(--km-v)));
+  }
+
+  /* Respuesta de la decisión, junto a las preguntas */
+  .km-answer {
+    margin: 0;
+    padding: var(--km-pad);
+    border-radius: var(--km-radius);
+    background: var(--km-sign);
+    color: var(--km-on-sign);
+    font-weight: var(--semantic-font-weight-bold);
+  }
+  .km-answer__k { display: block; font-family: var(--km-font-clock); font-size: 0.75rem; font-weight: var(--semantic-font-weight-regular); text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+  @media (min-width: 64em) { .km-answer { display: none; } }
 }
 
 /* ===== Maquetas isométricas: materiales (fuera de capa, son tokens) ===== */
@@ -577,5 +722,13 @@
     }
   }
 }
+@layer syx.app {
+  @media (prefers-reduced-motion: no-preference) {
+    .km-iso--m.is-playing [data-iso-part="coche"], .km-iso--m.is-playing [data-iso-part="coche-cabina"] { animation-name: km-drive-m; }
+    .km-iso--m.is-playing [data-iso-part="tren-1"], .km-iso--m.is-playing [data-iso-part="tren-2"] { animation-name: km-rail-m; }
+  }
+}
+@keyframes km-drive-m { 0% { --iso-u: -2; opacity: 0; } 6% { opacity: 1; } 72% { --iso-u: 4.4; opacity: 1; } 80%, 100% { --iso-u: 4.4; opacity: 0; } }
+@keyframes km-rail-m { 0% { --iso-u: -4.6; opacity: 0; } 6% { opacity: 1; } 55% { --iso-u: 0; } 90% { --iso-u: 0; opacity: 1; } 100% { --iso-u: 0; opacity: 0; } }
 @keyframes km-drive { 0% { --iso-u: -4; opacity: 0; } 6% { opacity: 1; } 72% { --iso-u: 6.5; opacity: 1; } 80%, 100% { --iso-u: 6.5; opacity: 0; } }
 @keyframes km-rail { 0% { --iso-u: -8; opacity: 0; } 6% { opacity: 1; } 55% { --iso-u: 0; } 90% { --iso-u: 0; opacity: 1; } 100% { --iso-u: 0; opacity: 0; } }
