@@ -1,0 +1,581 @@
+/* capa: prototipo — CSS de la landing «Kilómetro», que consume SYX (tema kilometro) */
+@layer syx.reset, syx.base, syx.tokens, syx.atoms, syx.molecules, syx.organisms, syx.app, syx.utilities;
+
+/*
+  GRID SPEC — Kilómetro
+  Contexto       : landing narrativa (storytelling) en pantalla, mobile first; texto + datos; expresividad editorial
+  Tipografía     : cuerpo Space Grotesk 16→18px / 1.5 · medida 62 car. reales = 31.613em (gridcalc lines --measure 62)
+  Densidad       : uso reading · default · razón de cadena 2
+  Cadena         : micro 4 · inner 6→8 · padding 12→14 · gutter 16→28 · margen 16→120 · sección 96→112 (gridcalc compose)
+  Retícula base  : 6 col (<48rem) → 12 col · gutter clamp(1rem, .75rem + 1.111vw, 1.75rem) · máx. 1200px
+  Escala         : cuarta justa 1.333 sobre 18 → 14 · 18 · 24 · 32 · 42 · 56 · 76 · 102 · 134 (gridcalc scale --snap 2)
+  Operadores     : O3 desplazamiento (la prosa arranca en la línea 3, k = 2, siempre el mismo)
+                   O8 rotación 30° (las maquetas isométricas, capa decorativa con texto alternativo)
+  Ruptura        : el mapa del trayecto y el ranking ocupan del margen izquierdo al derecho (línea full)
+  Invariantes    : prosa ≤ 31.613em · orden DOM = orden de lectura · espaciado vertical en lh
+*/
+
+/* ===== Paso 1 · tokens del proyecto (leen roles semánticos; longitudes literales solo aquí) ===== */
+:root {
+  /* Color: la carretera */
+  --km-ink: var(--semantic-color-text-primary);
+  --km-ink-soft: var(--semantic-color-text-secondary);
+  --km-paper: var(--semantic-color-bg-primary);
+  --km-paper-2: var(--semantic-color-bg-secondary);
+  --km-paper-3: var(--semantic-color-bg-tertiary);
+  --km-line: var(--semantic-color-border-default);
+  --km-sign: var(--semantic-color-primary);             /* azul de cartel de autovía */
+  --km-on-sign: var(--semantic-color-on-primary);
+  --km-sign-ink: var(--semantic-color-primary-text);
+  --km-car: var(--semantic-color-tertiary);             /* ámbar: el coche */
+  --km-on-car: var(--semantic-color-on-tertiary);
+  --km-rail: var(--semantic-color-secondary);           /* violeta: la C3 */
+  --km-rail-ink: var(--semantic-color-secondary-text);
+  --km-metro: var(--semantic-color-quaternary);         /* verde: la L5 */
+  --km-metro-ink: var(--semantic-color-quaternary-text);
+  --km-alert: var(--semantic-color-state-error);
+  --km-alert-ink: var(--semantic-color-state-error-text);
+  --km-good: var(--semantic-color-state-success-text);
+
+  /* Tipo: rótulo, lectura, horario */
+  --km-font-sign: var(--semantic-font-family-heading);
+  --km-font-body: var(--semantic-font-family-primary);
+  --km-font-clock: var(--semantic-font-family-mono);
+  --km-size-body: clamp(1rem, 0.9583rem + 0.1852vw, 1.125rem);
+  --km-size-s1: 0.875rem;                                 /* 14 */
+  --km-size-1: 1.5rem;                                    /* 24 */
+  --km-size-2: 2rem;                                      /* 32 */
+  --km-size-3: clamp(2rem, 1.6667rem + 1.4815vw, 2.625rem);      /* 32 → 42 */
+  --km-size-4: clamp(2.625rem, 2.3333rem + 1.2963vw, 3.5rem);    /* 42 → 56 */
+  --km-size-5: clamp(3.5rem, 2.9167rem + 2.5926vw, 4.75rem);     /* 56 → 76 */
+  --km-size-7: clamp(3.5rem, 1.1667rem + 10.3704vw, 8.375rem);   /* 56 → 134 */
+  --km-measure: 31.613em;                                 /* 62 car. de media, gridcalc lines */
+  --km-lh-body: 1.5;
+  --km-lh-sign: 0.98;
+
+  /* Espacio: cadena de proximidad de gridcalc compose */
+  --km-micro: 0.25rem;
+  --km-inner: clamp(0.375rem, 0.3333rem + 0.1852vw, 0.5rem);
+  --km-pad: clamp(0.75rem, 0.7083rem + 0.1852vw, 0.875rem);
+  --km-gutter: clamp(1rem, 0.75rem + 1.1111vw, 1.75rem);
+  --km-margin-extra: clamp(0rem, -2.1667rem + 9.6296vw, 6.5rem); /* + los 16px del cuerpo = margen 16 → 120 */
+  --km-section: clamp(6rem, 5.6667rem + 1.4815vw, 7rem);
+  --km-max: var(--layout-max-width);
+  --km-cols: 6;
+  --km-radius: var(--semantic-border-radius-default);
+  --km-rule: var(--semantic-border-width-default);
+  --km-rule-thick: var(--semantic-border-width-thick);
+
+  /* Movimiento */
+  --km-dur: var(--semantic-duration-base);
+  --km-ease: var(--semantic-easing-standard);
+
+  /* Ilustración isométrica: tres tonos por material, derivados de los roles con una regla fija
+     (cara superior +0,09 L hacia el cálido, lateral derecho −0,13 L y 85 % de croma hacia el frío),
+     el mismo reparto que shade() de iso.mjs, así que siguen al modo oscuro. */
+  --km-iso-sombra: var(--semantic-color-text-primary);
+}
+
+@media (min-width: 48em) { :root { --km-cols: 12; } }
+
+/* ===== Paso 2 · reglas ===== */
+@layer syx.app {
+  /* syx-reuse-file: layout-grid trabaja por escalones (gridcalc D2) y aquí gutter y margen son continuos; las piezas que pintan llevan su propia línea */
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  /* syx-reuse: checked el reset de SYX (fondo del body) — la página fija su fondo y su gutter seguro */
+  body {
+    background: var(--km-paper);
+    color: var(--km-ink);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  /* syx-reuse: checked atom-txt (tamaños fijos) — el cuerpo de lectura es fluido 16 → 18 */
+  .km-page {
+    font-family: var(--km-font-body);
+    font-size: var(--km-size-body);
+    line-height: var(--km-lh-body);
+    color: var(--km-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .km-wrap {
+    max-inline-size: var(--km-max);
+    margin-inline: auto;
+    padding-inline: var(--km-margin-extra);
+  }
+
+  .km-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--km-cols), minmax(0, 1fr));
+    column-gap: var(--km-gutter);
+    row-gap: calc(var(--km-lh-body) * 1em);
+  }
+  .km-grid > * { grid-column: 1 / -1; min-width: 0; }
+
+  @media (min-width: 48em) {
+    .km-col-prose { grid-column: 3 / span 8; }       /* O3: k = 2 */
+    .km-col-aside { grid-column: 1 / span 2; }
+    .km-col-half { grid-column: span 6; }
+    .km-col-wide { grid-column: 3 / -1; }
+  }
+  @media (min-width: 64em) {
+    .km-col-prose { grid-column: 3 / span 7; }
+  }
+
+  /* syx-reuse: checked atom-txt — la prosa se limita a la medida en caracteres reales */
+  .km-prose { max-inline-size: var(--km-measure); display: grid; gap: 0.75lh; }
+  .km-prose p { margin: 0; text-wrap: pretty; }
+  .km-prose strong { font-weight: var(--semantic-font-weight-bold); }
+
+  /* ---------- Capítulos ---------- */
+  .km-chapter {
+    padding-block: var(--km-section) 0;
+    scroll-margin-top: var(--km-gutter);
+  }
+  .km-chapter + .km-chapter { border-block-start: var(--km-rule) solid var(--km-line); margin-block-start: var(--km-section); }
+
+  /* syx-reuse: checked atom-label, atom-pill — la hora del capítulo es un dato del día (horario), no una etiqueta */
+  .km-clock {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--km-inner) var(--km-pad);
+    font-family: var(--km-font-clock);
+    font-size: var(--km-size-s1);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--km-ink-soft);
+  }
+  .km-clock__time {
+    font-size: var(--km-size-1);
+    letter-spacing: 0;
+    color: var(--km-ink);
+    font-weight: var(--semantic-font-weight-medium);
+  }
+
+  /* syx-reuse: checked atom-title (familia del cuerpo) — los titulares son rótulo de carretera */
+  .km-title {
+    margin: 0;
+    font-family: var(--km-font-sign);
+    font-weight: 400;
+    font-size: var(--km-size-5);
+    line-height: var(--km-lh-sign);
+    letter-spacing: 0.005em;
+    text-wrap: balance;
+    color: var(--km-ink);
+  }
+  .km-title--sub { font-size: var(--km-size-3); }
+  .km-lede {
+    margin: 0;
+    font-size: var(--km-size-1);
+    line-height: 1.333;
+    max-inline-size: 24em;
+    text-wrap: pretty;
+    color: var(--km-ink);
+  }
+
+  /* ---------- Portada ---------- */
+  .km-hero { padding-block: calc(var(--km-section) * 0.5) 0; }
+  .km-hero__title {
+    margin: 0;
+    font-family: var(--km-font-sign);
+    font-weight: 400;
+    font-size: var(--km-size-7);
+    line-height: 0.9;
+    letter-spacing: 0.002em;
+    text-wrap: balance;
+  }
+  .km-hero__title em { font-style: normal; font-family: inherit; color: var(--km-sign-ink); }
+
+  /* syx-reuse: checked mol-card, atom-pill — un cartel de autovía: fondo azul, filete blanco interior, flecha */
+  .km-sign {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--km-pad) var(--km-gutter);
+    padding: var(--km-pad) var(--km-gutter);
+    background: var(--km-sign);
+    color: var(--km-on-sign);
+    border-radius: var(--km-radius);
+    outline: var(--km-rule-thick) solid var(--km-on-sign);
+    outline-offset: calc(var(--km-micro) * -2);
+    max-inline-size: 34rem;
+  }
+  .km-sign__road {
+    font-family: var(--km-font-sign);
+    font-size: var(--km-size-2);
+    line-height: 1;
+    padding: var(--km-micro) var(--km-inner);
+    border: var(--km-rule-thick) solid var(--km-on-sign);
+    border-radius: var(--semantic-border-radius-sm);
+  }
+  .km-sign__to { display: grid; line-height: 1.15; }
+  .km-sign__place { font-weight: var(--semantic-font-weight-bold); font-size: var(--km-size-1); }
+  .km-sign__via { font-size: var(--km-size-s1); opacity: 0.9; }
+  .km-sign__km { font-family: var(--km-font-sign); font-size: var(--km-size-3); line-height: 1; white-space: nowrap; }
+
+  /* ---------- Ilustraciones isométricas ---------- */
+  /* syx-reuse: checked mol-card__media (imagen recortada) — la maqueta es un SVG vivo con tokens propios */
+  .km-figure { margin: 0; display: grid; gap: var(--km-inner); }
+  .km-figure figcaption {
+    font-family: var(--km-font-clock);
+    font-size: var(--km-size-s1);
+    color: var(--km-ink-soft);
+    max-inline-size: var(--km-measure);
+  }
+  .km-iso { display: block; inline-size: 100%; block-size: auto; max-inline-size: 100%; overflow: visible; }
+  .km-iso .iso-sombras polygon { fill-opacity: 0.14; }
+
+  /* ---------- Cifras de portada ---------- */
+  /* syx-reuse: checked atom-stat (número + etiqueta, sin unidad ni contexto) — cada cifra lleva su horquilla */
+  .km-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--km-gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block: var(--km-rule) solid var(--km-line);
+    padding-block: var(--km-gutter);
+  }
+  .km-fact { display: grid; gap: var(--km-micro); align-content: start; }
+  .km-fact__num { font-family: var(--km-font-sign); font-size: var(--km-size-4); line-height: 1; }
+  .km-fact__num--car { color: var(--km-ink); }
+  .km-fact__label { font-size: var(--km-size-s1); color: var(--km-ink-soft); max-inline-size: 18em; }
+  .km-fact__dot {
+    display: inline-block;
+    inline-size: 0.6em;
+    block-size: 0.6em;
+    border-radius: var(--semantic-border-radius-full);
+    margin-inline-end: var(--km-inner);
+    vertical-align: 0.08em;
+  }
+
+  /* ---------- Tres opciones ---------- */
+  .km-modes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: var(--km-gutter);
+  }
+  .km-mode-name { display: flex; align-items: center; gap: var(--km-inner); }
+  .km-mode-num { font-family: var(--km-font-sign); font-size: var(--km-size-4); line-height: 1; }
+  .km-mode-dl { display: grid; grid-template-columns: 1fr auto; gap: var(--km-micro) var(--km-pad); margin: 0; font-size: var(--km-size-s1); }
+  .km-mode-dl dt { color: var(--km-ink-soft); }
+  .km-mode-dl dd { margin: 0; font-family: var(--km-font-clock); text-align: end; }
+
+  /* syx-reuse: checked mol-card (sin borde superior de color) — cada modo lleva su color de línea arriba */
+  .km-swatch-car { --km-swatch: var(--km-car); }
+  .km-swatch-rail { --km-swatch: var(--km-rail); }
+  .km-swatch-metro { --km-swatch: var(--km-metro); }
+  .km-swatch-sign { --km-swatch: var(--km-sign); }
+  .km-swatch-alert { --km-swatch: var(--km-alert); }
+  .km-swatch-ink { --km-swatch: var(--km-ink-soft); }
+  .km-band { display: block; block-size: calc(var(--km-micro) * 1.5); background: var(--km-swatch); }
+  .km-dot { background: var(--km-swatch); }
+
+  /* ---------- Gráficos de barras (HTML a escala) ---------- */
+  /* syx-reuse: checked atom-progress (una sola barra, sin escala ni etiquetas) — gráfico con eje compartido */
+  .km-chart { display: grid; gap: var(--km-inner); }
+  .km-chart__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--km-pad); }
+  .km-chart__title { margin: 0; font-family: var(--km-font-body); font-weight: var(--semantic-font-weight-bold); font-size: var(--km-size-body); letter-spacing: 0; text-transform: none; }
+  .km-rowhead { font-family: var(--km-font-body); font-size: var(--km-size-s1); font-weight: var(--semantic-font-weight-medium); text-transform: none; letter-spacing: 0; }
+  .km-chart__note { margin: 0; font-size: var(--km-size-s1); color: var(--km-ink-soft); }
+  .km-bars { display: grid; gap: var(--km-inner); margin: 0; padding: 0; list-style: none; }
+  .km-bar {
+    display: grid;
+    grid-template-columns: minmax(3.5rem, 5.5rem) minmax(0, 1fr) minmax(4.5rem, auto);
+    align-items: center;
+    gap: var(--km-pad);
+  }
+  .km-bar--wide {
+    grid-template-columns: minmax(0, 1fr) 7.5rem;
+    grid-template-areas: "label label" "track value";
+    row-gap: var(--km-micro);
+  }
+  .km-bar--wide .km-bar__label { grid-area: label; }
+  .km-bar--wide .km-bar__track { grid-area: track; }
+  .km-bar--wide .km-bar__value { grid-area: value; white-space: normal; line-height: 1.25; }
+  @media (min-width: 48em) {
+    .km-bar--wide { grid-template-columns: minmax(7.5rem, 15rem) minmax(0, 1fr) minmax(4.5rem, auto); grid-template-areas: "label track value"; }
+  }
+  .km-bar__label { font-family: var(--km-font-clock); font-size: var(--km-size-s1); }
+  .km-bar__label--text { font-family: var(--km-font-body); line-height: 1.25; }
+  .km-bar__track {
+    position: relative;
+    block-size: 1.5rem;
+    background: repeating-linear-gradient(90deg, var(--km-line) 0 1px, transparent 1px calc(100% / var(--km-ticks, 4)));
+    background-size: calc(100% + 1px) 100%;
+  }
+  .km-bar__fill {
+    position: absolute;
+    inset-block: 0.25rem;
+    inset-inline-start: 0;
+    inline-size: calc(var(--km-v) / var(--km-max-v) * 100%);
+    background: var(--km-swatch);
+    border-radius: 0 var(--semantic-border-radius-sm) var(--semantic-border-radius-sm) 0;
+    transition: inline-size var(--km-dur) var(--km-ease);
+  }
+  .km-bar__range {
+    position: absolute;
+    inset-block: 0.25rem;
+    inset-inline-start: calc(var(--km-v) / var(--km-max-v) * 100%);
+    inline-size: calc((var(--km-v2) - var(--km-v)) / var(--km-max-v) * 100%);
+    background: repeating-linear-gradient(135deg, var(--km-swatch) 0 3px, transparent 3px 7px);
+    border: var(--km-rule) solid var(--km-swatch);
+    border-inline-start: 0;
+  }
+  .km-bar__value { font-family: var(--km-font-clock); font-size: var(--km-size-s1); white-space: nowrap; }
+  .km-bar__value b { font-weight: var(--semantic-font-weight-medium); color: var(--km-ink); }
+  .km-bar__value span { color: var(--km-ink-soft); }
+  .km-bar.is-peak .km-bar__label, .km-bar.is-peak .km-bar__value b { color: var(--km-alert-ink); }
+  .km-bar.is-best .km-bar__label, .km-bar.is-best .km-bar__value b { color: var(--km-good); }
+  .km-axis {
+    display: grid;
+    grid-template-columns: minmax(3.5rem, 5.5rem) minmax(0, 1fr) minmax(4.5rem, auto);
+    gap: var(--km-pad);
+    font-family: var(--km-font-clock);
+    font-size: 0.75rem;
+    color: var(--km-ink-soft);
+  }
+  .km-axis--wide { grid-template-columns: minmax(0, 1fr) 7.5rem; }
+  .km-axis--wide > span:first-child { display: none; }
+  @media (min-width: 48em) { .km-axis--wide { grid-template-columns: minmax(7.5rem, 15rem) minmax(0, 1fr) minmax(4.5rem, auto); } .km-axis--wide > span:first-child { display: block; } }
+  .km-axis__ticks { display: flex; justify-content: space-between; }
+  @media (prefers-reduced-motion: reduce) { .km-bar__fill { transition: none; } }
+
+  /* Gráfico de columnas (vuelta) */
+  .km-cols {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--km-inner);
+    align-items: end;
+    block-size: 15rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-end: var(--km-rule) solid var(--km-ink-soft);
+    background: linear-gradient(var(--km-line) 1px, transparent 1px) 0 0 / 100% 25%;
+  }
+  .km-col { display: grid; grid-template-rows: auto 1fr; block-size: calc(var(--km-v) / var(--km-max-v) * 100%); gap: var(--km-micro); }
+  .km-col__value { font-family: var(--km-font-clock); font-size: var(--km-size-s1); text-align: center; }
+  .km-col__fill { background: var(--km-swatch); border-radius: var(--semantic-border-radius-sm) var(--semantic-border-radius-sm) 0 0; }
+  .km-col.is-peak .km-col__value { color: var(--km-alert-ink); font-weight: var(--semantic-font-weight-bold); }
+  .km-col.is-best .km-col__value { color: var(--km-good); font-weight: var(--semantic-font-weight-bold); }
+  .km-col-labels { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--km-inner); font-family: var(--km-font-clock); font-size: var(--km-size-s1); text-align: center; color: var(--km-ink-soft); }
+
+  /* syx-reuse: checked mol-btn-group (botones sueltos) — un selector segmentado con radios nativos */
+  .km-seg { display: inline-flex; flex-wrap: wrap; gap: var(--km-micro); padding: var(--km-micro); border: var(--km-rule) solid var(--km-line); border-radius: var(--km-radius); margin: 0; }
+  .km-seg label {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.25rem;
+    padding-inline: var(--km-pad);
+    border-radius: var(--semantic-border-radius-sm);
+    font-size: var(--km-size-s1);
+    cursor: pointer;
+  }
+  .km-seg input { position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; }
+  .km-seg input:checked + span { font-weight: var(--semantic-font-weight-bold); }
+  .km-seg label:has(input:checked) { background: var(--km-ink); color: var(--km-paper); }
+  .km-seg label:has(input:focus-visible) { outline: var(--km-rule-thick) solid var(--semantic-color-border-focus); outline-offset: 2px; }
+
+  /* ---------- Itinerario en transporte público (diagrama de línea) ---------- */
+  /* syx-reuse: checked atom-list, atom-table — un diagrama de línea de Metro con tramos de color */
+  .km-line { display: grid; margin: 0; padding: 0; list-style: none; }
+  .km-stop {
+    display: grid;
+    grid-template-columns: 3.5rem 1.5rem minmax(0, 1fr);
+    column-gap: var(--km-pad);
+  }
+  .km-stop__time { font-family: var(--km-font-clock); font-size: var(--km-size-s1); padding-block-start: 0.15rem; }
+  .km-stop__rail { display: grid; grid-template-rows: 1.5rem 1fr; justify-items: center; }
+  .km-stop__node {
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-block-start: 0.25rem;
+    border-radius: var(--semantic-border-radius-full);
+    background: var(--km-paper);
+    border: var(--km-rule-thick) solid var(--km-ink);
+  }
+  .km-stop__seg { inline-size: 0.375rem; background: var(--km-swatch, var(--km-ink-soft)); }
+  .km-stop__seg--walk { inline-size: 0; border-inline-start: 0.25rem dotted var(--km-ink-soft); background: none; }
+  .km-stop__body { padding-block-end: var(--km-gutter); display: grid; gap: var(--km-micro); }
+  .km-stop__place { font-weight: var(--semantic-font-weight-bold); }
+  .km-stop__leg { font-size: var(--km-size-s1); color: var(--km-ink-soft); display: flex; flex-wrap: wrap; gap: var(--km-inner); align-items: center; }
+  .km-stop:last-child .km-stop__seg { display: none; }
+  .km-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--km-inner);
+    border-radius: var(--semantic-border-radius-sm);
+    background: var(--km-swatch);
+    color: var(--km-paper);
+    font-family: var(--km-font-clock);
+    font-weight: var(--semantic-font-weight-medium);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+  }
+  .km-tag.km-swatch-car { color: var(--km-on-car); }
+
+  /* ---------- Callouts ---------- */
+  /* syx-reuse: checked mol-alert (icono y fondo de estado) — una cita lateral del dato que corrige a Google */
+  .km-note {
+    display: grid;
+    gap: var(--km-micro);
+    padding: var(--km-pad) var(--km-gutter);
+    border-inline-start: calc(var(--km-micro) * 1.5) solid var(--km-swatch);
+    background: var(--km-paper-2);
+    max-inline-size: var(--km-measure);
+  }
+  .km-note p { margin: 0; }
+  .km-note__k { font-family: var(--km-font-clock); font-size: var(--km-size-s1); text-transform: uppercase; letter-spacing: 0.06em; color: var(--km-ink-soft); }
+
+  /* Gran cifra comparativa */
+  .km-versus { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--km-gutter); align-items: end; }
+  .km-versus__item { display: grid; gap: var(--km-micro); }
+  .km-versus__num { font-family: var(--km-font-sign); font-size: var(--km-size-5); line-height: 0.95; }
+  .km-versus__num small { font-size: 0.5em; }
+  .km-versus__label { font-size: var(--km-size-s1); color: var(--km-ink-soft); }
+
+  /* ---------- Decisión ---------- */
+  .km-decide { display: grid; gap: var(--km-gutter); }
+  @media (min-width: 64em) { .km-decide { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; } }
+  .km-q { display: grid; gap: var(--km-inner); }
+  .km-q[hidden] { display: none; }
+  .km-q__text { font-weight: var(--semantic-font-weight-bold); }
+  .km-q__step { font-family: var(--km-font-clock); font-size: var(--km-size-s1); color: var(--km-ink-soft); }
+  .km-outcomes { display: grid; gap: var(--km-inner); margin: 0; padding: 0; list-style: none; counter-reset: none; }
+  .km-outcome {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--km-pad);
+    padding: var(--km-pad);
+    border: var(--km-rule) solid var(--km-line);
+    border-radius: var(--km-radius);
+    color: var(--km-ink-soft);
+    transition: background-color var(--km-dur) var(--km-ease), color var(--km-dur) var(--km-ease);
+  }
+  .km-outcome__rank { font-family: var(--km-font-sign); font-size: var(--km-size-2); line-height: 1; }
+  .km-outcome__name { font-weight: var(--semantic-font-weight-medium); }
+  .km-outcome__time { font-family: var(--km-font-clock); font-size: var(--km-size-s1); white-space: nowrap; }
+  .km-outcome.is-active { background: var(--km-sign); color: var(--km-on-sign); border-color: var(--km-sign); }
+  @media (prefers-reduced-motion: reduce) { .km-outcome { transition: none; } }
+
+  /* ---------- Tabla de criterios ---------- */
+  /* syx-reuse: checked atom-table--primary (cabecera de color) — las celdas llevan intensidad por puntuación */
+  .km-score { display: block; text-align: center; font-family: var(--km-font-clock); padding-block: var(--km-micro); border-radius: var(--semantic-border-radius-sm); }
+  .km-score[data-s="5"] { background: color-mix(in oklab, var(--km-metro) 42%, var(--km-paper)); }
+  .km-score[data-s="4"] { background: color-mix(in oklab, var(--km-metro) 26%, var(--km-paper)); }
+  .km-score[data-s="3"] { background: color-mix(in oklab, var(--km-metro) 12%, var(--km-paper)); }
+  .km-score[data-s="2"] { background: color-mix(in oklab, var(--km-alert) 12%, var(--km-paper)); }
+  .km-score[data-s="1"] { background: color-mix(in oklab, var(--km-alert) 26%, var(--km-paper)); }
+  .km-score-total { display: block; text-align: center; font-family: var(--km-font-sign); font-size: var(--km-size-1); }
+  .km-score-total.is-best { color: var(--km-sign-ink); }
+
+  /* ---------- Listas de riesgos y pasos ---------- */
+  .km-risks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: var(--km-gutter); margin: 0; padding: 0; list-style: none; }
+  .km-risk { display: grid; gap: var(--km-inner); align-content: start; padding-block-start: var(--km-pad); border-block-start: var(--km-rule-thick) solid var(--km-swatch); }
+  .km-risk h3 { margin: 0; font-family: var(--km-font-body); font-weight: var(--semantic-font-weight-bold); font-size: var(--km-size-body); text-transform: none; letter-spacing: 0; }
+  .km-risk p { margin: 0; font-size: var(--km-size-s1); }
+  .km-risk__meta { font-family: var(--km-font-clock); font-size: 0.8125rem; color: var(--km-ink-soft); }
+
+  .km-steps { display: grid; gap: var(--km-inner); margin: 0; padding: 0; list-style: none; }
+  .km-steps li { padding-block: var(--km-inner); border-block-end: var(--km-rule) solid var(--km-line); }
+  .km-steps__progress { font-family: var(--km-font-clock); font-size: var(--km-size-s1); color: var(--km-ink-soft); }
+
+  /* ---------- Pie ---------- */
+  .km-foot { padding-block: var(--km-section) calc(var(--km-section) * 0.75); }
+  .km-sources { display: grid; gap: var(--km-inner); margin: 0; padding: 0; list-style: none; font-size: var(--km-size-s1); }
+  .km-meta { font-size: var(--km-size-s1); color: var(--km-ink-soft); }
+  .km-meta p { margin: 0; }
+
+  /* Índice de capítulos */
+  .km-toc { display: flex; flex-wrap: wrap; gap: var(--km-inner) var(--km-gutter); margin: 0; padding: 0; list-style: none; font-family: var(--km-font-clock); font-size: var(--km-size-s1); }
+  .km-toc a { color: var(--km-ink-soft); text-decoration-color: var(--km-line); text-underline-offset: 0.25em; }
+  .km-toc a:hover { color: var(--km-ink); }
+  .km-toc b { color: var(--km-ink); font-weight: var(--semantic-font-weight-medium); }
+}
+
+/* ===== Maquetas isométricas: materiales (fuera de capa, son tokens) ===== */
+/* syx-reuse: checked --semantic-color-* — cada material lee un rol y deriva sus tres caras con oklch relativo */
+:root {
+  --km-iso-losa-base: color-mix(in oklab, var(--semantic-color-text-secondary) 14%, var(--semantic-color-bg-tertiary));
+  --km-iso-balasto-base: color-mix(in oklab, var(--semantic-color-text-secondary) 28%, var(--semantic-color-bg-tertiary));
+  --km-iso-asfalto-base: var(--semantic-color-text-secondary);
+  --km-iso-marca-base: var(--semantic-color-bg-primary);
+  --km-iso-carril-base: var(--semantic-color-text-tertiary);
+  --km-iso-coche-base: var(--semantic-color-tertiary);
+  --km-iso-gris-base: var(--semantic-color-text-tertiary);
+  --km-iso-tren-base: var(--semantic-color-secondary);
+  --km-iso-oficina-base: var(--semantic-color-primary);
+  --km-iso-edificio-base: var(--semantic-color-text-tertiary);
+  --km-iso-casa-base: var(--semantic-color-bg-primary);
+  --km-iso-arbol-base: var(--semantic-color-quaternary);
+  --km-iso-lleno-base: var(--semantic-color-state-error);
+}
+.km-iso {
+  --km-iso-losa-left: var(--km-iso-losa-base);
+  --km-iso-losa-top: oklch(from var(--km-iso-losa-base) calc(l + 0.06) c h);
+  --km-iso-losa-right: oklch(from var(--km-iso-losa-base) calc(l - 0.13) calc(c * 0.85) h);
+  --km-iso-balasto-left: var(--km-iso-balasto-base);
+  --km-iso-balasto-top: oklch(from var(--km-iso-balasto-base) calc(l + 0.04) c h);
+  --km-iso-balasto-right: oklch(from var(--km-iso-balasto-base) calc(l - 0.13) calc(c * 0.85) h);
+  --km-iso-asfalto-left: var(--km-iso-asfalto-base);
+  --km-iso-asfalto-top: oklch(from var(--km-iso-asfalto-base) calc(l + 0.09) c calc(h - 4));
+  --km-iso-asfalto-right: oklch(from var(--km-iso-asfalto-base) calc(l - 0.13) calc(c * 0.85) calc(h + 4));
+  --km-iso-marca-left: var(--km-iso-marca-base);
+  --km-iso-marca-top: var(--km-iso-marca-base);
+  --km-iso-marca-right: var(--km-iso-marca-base);
+  --km-iso-carril-left: var(--km-iso-carril-base);
+  --km-iso-carril-top: oklch(from var(--km-iso-carril-base) calc(l + 0.09) c h);
+  --km-iso-carril-right: oklch(from var(--km-iso-carril-base) calc(l - 0.13) calc(c * 0.85) h);
+  --km-iso-coche-left: var(--km-iso-coche-base);
+  --km-iso-coche-top: oklch(from var(--km-iso-coche-base) calc(l + 0.09) c calc(h + 6));
+  --km-iso-coche-right: oklch(from var(--km-iso-coche-base) calc(l - 0.15) calc(c * 0.85) calc(h - 22));
+  --km-iso-gris-left: var(--km-iso-gris-base);
+  --km-iso-gris-top: oklch(from var(--km-iso-gris-base) calc(l + 0.09) c h);
+  --km-iso-gris-right: oklch(from var(--km-iso-gris-base) calc(l - 0.13) calc(c * 0.85) h);
+  --km-iso-tren-left: var(--km-iso-tren-base);
+  --km-iso-tren-top: oklch(from var(--km-iso-tren-base) calc(l + 0.09) c calc(h - 4));
+  --km-iso-tren-right: oklch(from var(--km-iso-tren-base) calc(l - 0.13) calc(c * 0.85) calc(h - 8));
+  --km-iso-oficina-left: var(--km-iso-oficina-base);
+  --km-iso-oficina-top: oklch(from var(--km-iso-oficina-base) calc(l + 0.1) c h);
+  --km-iso-oficina-right: oklch(from var(--km-iso-oficina-base) calc(l - 0.13) calc(c * 0.85) calc(h + 4));
+  --km-iso-edificio-left: var(--km-iso-edificio-base);
+  --km-iso-edificio-top: oklch(from var(--km-iso-edificio-base) calc(l + 0.09) c h);
+  --km-iso-edificio-right: oklch(from var(--km-iso-edificio-base) calc(l - 0.13) calc(c * 0.85) h);
+  --km-iso-casa-left: var(--km-iso-casa-base);
+  --km-iso-casa-top: oklch(from var(--km-iso-casa-base) calc(l + 0.02) c h);
+  --km-iso-casa-right: oklch(from var(--km-iso-casa-base) calc(l - 0.1) calc(c + 0.03) 75);
+  --km-iso-arbol-left: var(--km-iso-arbol-base);
+  --km-iso-arbol-top: oklch(from var(--km-iso-arbol-base) calc(l + 0.09) c calc(h - 6));
+  --km-iso-arbol-right: oklch(from var(--km-iso-arbol-base) calc(l - 0.13) calc(c * 0.85) calc(h + 6));
+  --km-iso-lleno-left: var(--km-iso-lleno-base);
+  --km-iso-lleno-top: oklch(from var(--km-iso-lleno-base) calc(l + 0.09) c h);
+  --km-iso-lleno-right: oklch(from var(--km-iso-lleno-base) calc(l - 0.13) calc(c * 0.85) h);
+}
+
+/* Animación de la maqueta del trayecto: el coche y el tren avanzan por sus ejes del mundo (iso-flat-animacion, capa 1) */
+@property --iso-u { syntax: "<number>"; inherits: false; initial-value: 0; }
+@layer syx.app {
+  /* syx-reuse: checked los mixins de transición de SYX (solo SCSS) — desplazamiento por eje isométrico, unidad 32px */
+  .km-iso [data-iso-part="coche"], .km-iso [data-iso-part="coche-cabina"],
+  .km-iso [data-iso-part="tren-1"], .km-iso [data-iso-part="tren-2"] {
+    transform: translate(calc(var(--iso-u) * 0.8660254px * 32), calc(var(--iso-u) * 0.5px * 32));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .km-iso.is-playing [data-iso-part="coche"], .km-iso.is-playing [data-iso-part="coche-cabina"] {
+      animation: km-drive 9s var(--semantic-easing-in-out) infinite;
+    }
+    .km-iso.is-playing [data-iso-part="tren-1"], .km-iso.is-playing [data-iso-part="tren-2"] {
+      animation: km-rail 9s var(--semantic-easing-in-out) infinite;
+    }
+  }
+}
+@keyframes km-drive { 0% { --iso-u: -4; opacity: 0; } 6% { opacity: 1; } 72% { --iso-u: 6.5; opacity: 1; } 80%, 100% { --iso-u: 6.5; opacity: 0; } }
+@keyframes km-rail { 0% { --iso-u: -8; opacity: 0; } 6% { opacity: 1; } 55% { --iso-u: 0; } 90% { --iso-u: 0; opacity: 1; } 100% { --iso-u: 0; opacity: 0; } }

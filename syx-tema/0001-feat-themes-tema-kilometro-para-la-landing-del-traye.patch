@@ -1,0 +1,383 @@
+From e3a6005b682e12dc85774ae7795a1692f41ede4d Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 16 Oct 2026 13:59:02 +0200
+Subject: [PATCH] =?UTF-8?q?feat(themes):=20tema=20kilometro=20para=20la=20?=
+ =?UTF-8?q?landing=20del=20trayecto=20Valdemoro=20=E2=86=92=20Juli=C3=A1n?=
+ =?UTF-8?q?=20Camarillo?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WDgZhjB38Tsv98XF2oPqqJ
+---
+ prepros.config                         |  13 ++
+ scss/styles-theme-kilometro.scss       |  11 ++
+ scss/themes/kilometro/_setup.scss      |  40 +++++
+ scss/themes/kilometro/_theme.scss      | 195 +++++++++++++++++++++++++
+ scss/themes/kilometro/bundle-core.scss |  30 ++++
+ scss/themes/kilometro/bundle-docs.scss |  24 +++
+ 6 files changed, 313 insertions(+)
+ create mode 100644 scss/styles-theme-kilometro.scss
+ create mode 100644 scss/themes/kilometro/_setup.scss
+ create mode 100644 scss/themes/kilometro/_theme.scss
+ create mode 100644 scss/themes/kilometro/bundle-core.scss
+ create mode 100644 scss/themes/kilometro/bundle-docs.scss
+
+diff --git a/prepros.config b/prepros.config
+index cb1f442..3f02946 100644
+--- a/prepros.config
++++ b/prepros.config
+@@ -966,6 +966,19 @@
+           }
+         }
+       },
++      {
++        "file": "scss/styles-theme-kilometro.scss",
++        "config": {
++          "tasks": {
++            "autoprefixer": {
++              "enable": false
++            },
++            "minify-css": {
++              "enable": true
++            }
++          }
++        }
++      },
+       {
+         "file": "scss/styles-theme-syx-sketch.scss",
+         "config": {
+diff --git a/scss/styles-theme-kilometro.scss b/scss/styles-theme-kilometro.scss
+new file mode 100644
+index 0000000..40ca381
+--- /dev/null
++++ b/scss/styles-theme-kilometro.scss
+@@ -0,0 +1,11 @@
++// SYX — Entry point: kilometro
++// ================================================
++// Compiles to: css/styles-theme-kilometro.css
++// Made with `npm run theme:new kilometro` from scss/themes/_template/.
++// ================================================
++
++// THEME SETUP (tokens + reset + helpers + atoms + molecules + organisms)
++@use 'themes/kilometro/setup';
++
++// UTILITIES (text, display, spacing utility classes)
++@use 'utilities/index' as *;
+diff --git a/scss/themes/kilometro/_setup.scss b/scss/themes/kilometro/_setup.scss
+new file mode 100644
+index 0000000..3ca2fec
+--- /dev/null
++++ b/scss/themes/kilometro/_setup.scss
+@@ -0,0 +1,40 @@
++// ================================================
++// PLANTILLA DE TEMA — CABLEADO
++// ================================================
++// Lo instancia `npm run theme:new <nombre>`: copia los .scss de esta carpeta
++// y pone el nombre del tema en los mixins y en las llamadas de bundle. Nada
++// más: la lista de componentes vive en _shared/_bundle-full.scss y la de
++// fuentes en el _theme.scss de este tema (theme-x-fonts).
++// ================================================
++
++// CORE
++@use '../_base/universal' as *;
++@use '../_shared/core' as *;
++@use '../_shared/bundle-full' as *;
++// @use '../../site/bundle-site' as *; // CAPA DEL SITIO — ver abajo
++@use 'theme' as *;
++
++// THEME TOKENS
++// ================================================
++@include universal-values();
++@include theme-kilometro();
++
++// FONTS (declared once in _theme.scss)
++// ================================================
++@include theme-kilometro-fonts();
++
++// CORE (reset + elements + helpers + grid)
++// ================================================
++@include syx-core(kilometro);
++
++// FULL SYSTEM BUNDLE (every atom, molecule, organism)
++// ================================================
++@include syx-bundle-full(kilometro);
++
++// CAPA DEL SITIO — solo la llevan los temas que pintan las páginas de SYX
++// (home.html, docs.html…). Un tema para un producto NO: es mobiliario del
++// sitio. Para pintarlo, descomenta esta línea y el @use de arriba. Sin
++// ella el tema viaja igual en el paquete (bundle-docs, bundle-core) y
++// build-dist lo deja fuera de dist/site/.
++// ================================================
++// @include syx-bundle-site(kilometro);
+diff --git a/scss/themes/kilometro/_theme.scss b/scss/themes/kilometro/_theme.scss
+new file mode 100644
+index 0000000..067845d
+--- /dev/null
++++ b/scss/themes/kilometro/_theme.scss
+@@ -0,0 +1,195 @@
++// ================================================
++// PLANTILLA DE TEMA — EL CONTRATO MÍNIMO
++// ================================================
++// El punto de partida de un tema nuevo: `npm run theme:new <tu-tema>` copia
++// esta carpeta a scss/themes/<tu-tema>/ y pone el nombre en los mixins y en
++// las llamadas de bundle; tú cambias los valores marcados con ✎. Lo que no
++// está aquí lo pone el sistema (superficies, bordes, sombras, escala
++// tipográfica, tintas derivadas…), en claro y en oscuro.
++//
++// Es MÍNIMA a propósito: cada declaración de este fichero la lee algún
++// componente del sistema. Hasta octubre de 2026 la plantilla tenía 72
++// declaraciones y 17 no las leía nadie —los dos colores de marca que decía
++// «customize these» incluidos—, no traía modo oscuro y nada la compilaba. Hoy
++// la compila `npm run check:plantilla` como un tema más, en una copia del
++// árbol, y le pasa las comprobaciones de los temas reales: simetría claro /
++// oscuro, la elección de modo, contraste WCAG en los cuatro estados, las
++// mismas clases que los demás temas, que no le falte nada de lo que todos los
++// temas declaran y que cada línea de aquí tenga lector.
++//
++// Qué puede declarar un tema y qué no: THEMING-RULES.md, «El contrato de un
++// tema». (Auditoría 2026-10 · acción 14)
++// ================================================
++
++@use '../../abstracts/index' as *;
++
++@mixin theme-kilometro {
++  :root {
++    // ================================================
++    // 1 · MARCA ✎
++    // ================================================
++    // La paleta del tema, como primitivos propios. Solo los leen los roles de
++    // abajo: un componente nunca ve un primitivo (R01, R11). Los valores de la
++    // plantilla son neutros: pizarra y un ámbar de acento.
++    // KILÓMETRO — la identidad sale de la carretera: el azul de los carteles de
++    // autovía (A-4), el ámbar de la marca vial y del coche, el violeta de la
++    // línea C3 de Cercanías. Fondo de papel de mapa en claro, asfalto en oscuro.
++    --primitive-color-brand-300: oklch(0.78 0.1 252); // azul autovía, aclarado para el oscuro
++    --primitive-color-brand-500: oklch(0.56 0.16 256);
++    --primitive-color-brand-600: oklch(0.49 0.165 258);
++    --primitive-color-brand-700: oklch(0.43 0.155 260); // azul cartel de autovía
++    --primitive-color-brand-800: oklch(0.35 0.125 262);
++    --primitive-color-accent-500: oklch(0.8 0.155 78); // ámbar de marca vial (el coche)
++    --primitive-color-rail-300: oklch(0.76 0.11 305); // violeta C3, aclarado
++    --primitive-color-rail-600: oklch(0.52 0.17 302); // violeta C3 (el tren)
++    --primitive-color-paper-50: oklch(0.982 0.006 85); // papel de mapa
++    --primitive-color-paper-100: oklch(0.955 0.011 85);
++    --primitive-color-paper-200: oklch(0.925 0.014 85);
++    --primitive-color-asphalt-900: oklch(0.185 0.014 258); // asfalto de noche
++    --primitive-color-asphalt-850: oklch(0.225 0.016 258);
++    --primitive-color-asphalt-800: oklch(0.27 0.018 258);
++
++    // Unidad de espacio: todo el ritmo del sistema son múltiplos de ella.
++    --primitive-space-base: 0.25rem; // = micro de la cadena de gridcalc compose (4px)
++
++    // ================================================
++    // 2 · ROLES DE MARCA
++    // ================================================
++    // El relleno de cada rol. La tinta (el mismo color como TEXTO) y la
++    // variante fuerte (como límite de un control) se derivan solas.
++    --semantic-color-primary: var(--primitive-color-brand-700);
++    --semantic-color-secondary: var(--primitive-color-rail-600);
++    --semantic-color-tertiary: var(--primitive-color-accent-500);
++    // El relleno al pasar por encima: un peldaño más oscuro de la marca.
++    --semantic-color-state-hover-primary: var(--primitive-color-brand-800);
++    --semantic-color-state-hover-secondary: oklch(0.46 0.17 302);
++
++    // TINTA SOBRE RELLENO (on-*)
++    // Lo que va ENCIMA de cada relleno (texto del botón, página activa…): la
++    // tinta clara o la oscura del tema, la que dé ≥ 4,5:1. Las que no se
++    // declaran se quedan en el texto inverso. Si cambias un relleno,
++    // `npm run check:contraste` dice qué tinta declarar.
++    // El cuaternario y el quinario son los del sistema (verde y amarillo):
++    // también piden la tinta oscura, y sus rellenos de hover con ellos.
++    --semantic-color-on-secondary: var(--semantic-color-ink-light);
++    --semantic-color-on-tertiary: var(--semantic-color-ink-dark);
++    --semantic-color-on-quaternary: var(--semantic-color-ink-dark);
++    --semantic-color-on-quinary: var(--semantic-color-ink-dark);
++    --semantic-color-on-state-hover-tertiary: var(--semantic-color-ink-dark);
++    --semantic-color-on-state-hover-quaternary: var(--semantic-color-ink-dark);
++
++    // ================================================
++    // 3 · TEXTO ✎
++    // ================================================
++    // Los grises de la marca en vez de los neutros del sistema. Cada uno
++    // cumple 4,5:1 sobre los fondos claros (check:contraste). En oscuro los
++    // reasigna dark-mode-tokens().
++    --semantic-color-text-primary: oklch(0.235 0.022 258);
++    --semantic-color-text-secondary: oklch(0.45 0.03 258);
++    --semantic-color-text-tertiary: oklch(0.5 0.028 258);
++    // Superficies de papel de mapa (en vez del blanco y los grises neutros).
++    --semantic-color-bg-primary: var(--primitive-color-paper-50);
++    --semantic-color-bg-secondary: var(--primitive-color-paper-100);
++    --semantic-color-bg-tertiary: var(--primitive-color-paper-200);
++
++    // ================================================
++    // 4 · FORMA ✎
++    // ================================================
++    --semantic-border-radius-sm: 0.25rem; // casillas
++    --semantic-border-radius-default: 0.375rem; // botones, campos: la esquina de un cartel
++    --semantic-border-radius-lg: 0.5rem; // tarjetas
++    // Radio de las superficies de documentación (cita, bloque de código).
++    --theme-radius: var(--semantic-border-radius-default);
++    // Ancho de la columna de contenido.
++    --layout-max-width: calc(300 * var(--primitive-space-base)); // 1200px: tope de gridcalc compose
++
++    // ================================================
++    // 5 · TIPOGRAFÍA ✎
++    // ================================================
++    // Una familia de las que trae SYX, declarada en theme-kilometro-fonts()
++    // con syx-font() (al final). El nombre va seguido de su respaldo métrico.
++    // Elegidas con gridcalc compose (grid-system): Space Grotesk compone a 1.5 de
++    // interlineado (u = 24→28px) frente al 1.75 de Inter; Bebas Neue es la letra
++    // de rótulo (estrecha, de cartel) para titulares y cifras; DM Mono, el horario.
++    --semantic-font-family-primary: "Space Grotesk", "Space Grotesk Fallback", Arial, sans-serif;
++    --semantic-font-family-primary-bold: var(--semantic-font-family-primary);
++    --semantic-font-family-heading: "Bebas Neue", "Bebas Neue Fallback", Impact, sans-serif;
++    --semantic-font-family-heading-md: var(--semantic-font-family-primary);
++    --semantic-font-family-mono: "DM Mono", "DM Mono Fallback", "Courier New", monospace;
++
++    // ================================================
++    // 6 · ICONOS
++    // ================================================
++    // Los que leen los componentes (lista, migas, campos, paginación…). La
++    // plantilla los toma de Lucide, que el sistema ya trae; un tema con
++    // iconografía propia pone aquí sus data URI.
++    --icon-arrow-default: var(--lc-icon-chevron-right);
++    --icon-arrow-double: var(--lc-icon-chevrons-right);
++    --icon-content-bars: var(--lc-icon-menu);
++    --icon-rrss-email: var(--lc-icon-mail);
++    --icon-user-interface-cancel: var(--lc-icon-x);
++    --icon-user-interface-exclamation-mark: var(--lc-icon-warning);
++    --icon-user-interface-home: var(--lc-icon-home);
++    --icon-user-interface-tick: var(--lc-icon-check);
++  }
++
++  // ================================================
++  // 7 · MODO OSCURO — dos entradas, las dos con dark-mode-tokens()
++  // ================================================
++  // 1. Sin elección del usuario, sigue al sistema operativo… salvo que haya
++  //    elegido claro (`:not([data-theme="light"])`): así elegir claro no
++  //    necesita un bloque que deshaga el oscuro a mano.
++  // 2. Con elección explícita ([data-theme="dark"]), aunque el SO esté en claro.
++  // dark-mode-tokens() reasigna superficies, textos, bordes, sombras y la
++  // luminosidad de las tintas; el tema solo afina su marca, y lo que afine va
++  // en LAS DOS entradas (check:themes y check:modo-claro lo vigilan).
++  @media (prefers-color-scheme: dark) {
++    :root:not([data-theme="light"]) {
++      @include dark-mode-tokens();
++      // El azul de cartel desaparece sobre el asfalto: el primario sube.
++      --semantic-color-primary: var(--primitive-color-brand-300);
++      --semantic-color-on-primary: var(--semantic-color-ink-dark);
++      --semantic-color-secondary: var(--primitive-color-rail-300);
++      --semantic-color-on-secondary: var(--semantic-color-ink-dark);
++      --semantic-color-bg-primary: var(--primitive-color-asphalt-900);
++      --semantic-color-bg-secondary: var(--primitive-color-asphalt-850);
++      --semantic-color-bg-tertiary: var(--primitive-color-asphalt-800);
++    }
++  }
++
++  :root[data-theme="dark"] {
++    @include dark-mode-tokens();
++    --semantic-color-primary: var(--primitive-color-brand-300);
++    --semantic-color-on-primary: var(--semantic-color-ink-dark);
++    --semantic-color-secondary: var(--primitive-color-rail-300);
++    --semantic-color-on-secondary: var(--semantic-color-ink-dark);
++    --semantic-color-bg-primary: var(--primitive-color-asphalt-900);
++    --semantic-color-bg-secondary: var(--primitive-color-asphalt-850);
++    --semantic-color-bg-tertiary: var(--primitive-color-asphalt-800);
++  }
++
++  // Elegir «claro» no deshace nada (el :root ya es el claro): solo declara
++  // que los controles nativos del navegador van en claro.
++  :root[data-theme="light"] {
++    color-scheme: light;
++  }
++}
++
++// ================================================
++// 8 · FUENTES ✎
++// ================================================
++// Una sola fuente de verdad: _setup.scss y cada bundle-*.scss llaman a este
++// mixin en vez de repetir los @font-face. Una familia por tipografía y un
++// @font-face por peso, solo woff2. Las que trae SYX están en $syx-fonts
++// (abstracts/mixins/_font.scss); una propia se declara peso a peso:
++//   @include font-family("Tu Fuente", "#{$fonts-path}/tu-fuente/TuFuente-Regular", 400, normal);
++// Una que se carga fuera (un <link> a Google Fonts) se registra sin @font-face,
++// con el respaldo que llevará el token detrás ("Public Sans", Arial, sans-serif):
++//   @include syx-font-external("Public Sans", (Arial, sans-serif), "Google Fonts");
++// check:setups falla si un --semantic-font-family-* nombra una familia que no
++// sale de aquí ni es del sistema.
++@mixin theme-kilometro-fonts {
++  @include syx-font("Space Grotesk", 400 700);
++  @include syx-font("Bebas Neue", 400);
++  @include syx-font("DM Mono", 400 500);
++}
+diff --git a/scss/themes/kilometro/bundle-core.scss b/scss/themes/kilometro/bundle-core.scss
+new file mode 100644
+index 0000000..04729e0
+--- /dev/null
++++ b/scss/themes/kilometro/bundle-core.scss
+@@ -0,0 +1,30 @@
++// SYX — THEME BUNDLE: core (made from scss/themes/_template)
++// ================================================
++// The leanest functional bundle — production-ready minimum.
++// Contents defined once in _shared/_bundle-core.scss. build-dist compiles
++// it for every theme (<theme>.core.min.css): a theme without it breaks
++// `npm run build`, `npm pack` and `npm install` from git.
++// ================================================
++
++// CORE
++@use '../_base/universal' as *;
++@use '../_shared/core' as *;
++@use '../_shared/bundle-core' as *;
++@use 'theme' as *;
++
++// THEME TOKENS
++// ================================================
++@include universal-values();
++@include theme-kilometro();
++
++// FONTS (declared once in _theme.scss)
++// ================================================
++@include theme-kilometro-fonts();
++
++// CORE (reset + elements + grid; the .syx-* helpers ship apart)
++// ================================================
++@include syx-core(kilometro, $helpers: false);
++
++// BUNDLE: production minimum
++// ================================================
++@include syx-bundle-core(kilometro);
+diff --git a/scss/themes/kilometro/bundle-docs.scss b/scss/themes/kilometro/bundle-docs.scss
+new file mode 100644
+index 0000000..7c69aee
+--- /dev/null
++++ b/scss/themes/kilometro/bundle-docs.scss
+@@ -0,0 +1,24 @@
++// SYX — THEME BUNDLE: docs (made from scss/themes/_template)
++// ================================================
++// The full system without the site layer. build-dist compiles it for
++// every theme (<theme>.full.min.css, <theme>.tokens.min.css): a theme
++// without it breaks `npm run build`, `npm pack` and `npm install` from git.
++// ================================================
++@use '../../abstracts/index' as *;
++@use '../../base/index' as *;
++@use '../../layout/grids/grid' as *;
++@use '../../atoms/index' as *;
++@use '../../molecules/index' as *;
++@use '../../organisms/index' as *;
++@use '../_base/universal' as *;
++@use '../_shared/core' as *;
++@use '../_shared/bundle-full' as *;
++@use 'theme' as *;
++
++@include universal-values();
++@include theme-kilometro();
++
++@include theme-kilometro-fonts();
++
++@include syx-core(kilometro);
++@include syx-bundle-full(kilometro);
+-- 
+2.43.0
+
